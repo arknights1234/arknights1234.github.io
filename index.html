@@ -1,1 +1,793 @@
-test
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>명토체스</title>
+<style>
+  body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f5f5f5; }
+  header { background: #222; color: white; padding: 10px 20px; position: sticky; top: 0; z-index: 100; }
+  .tabs { display: flex; gap: 10px; }
+  .tab {
+    padding: 10px 20px;
+    cursor: pointer;
+    user-select: none;
+    background: #444;
+    border-radius: 4px 4px 0 0;
+  }
+  .tab.active { background: #fff; color: #222; font-weight: bold; }
+  main { background: #fff; padding: 20px; min-height: 70vh; }
+  section { display: none; }
+  section.active { display: block; }
+
+  /* 공통 리스트 스타일 */
+  .card-list { display: grid; grid-template-columns: repeat(auto-fill,minmax(220px,1fr)); gap: 15px; }
+  .card {
+    background: #eee;
+    border-radius: 6px;
+    padding: 15px;
+    box-shadow: 1px 1px 6px rgba(0,0,0,0.1);
+  }
+  .card img { width: 100%; border-radius: 4px; }
+  .card h3 { margin: 0 0 8px; }
+  .tooltip {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    border-bottom: 1px dotted black;
+  }
+  .tooltip .tooltiptext {
+    visibility: hidden; width: 150px; background: #222; color: #fff; text-align: center;
+    border-radius: 6px; padding: 5px 8px; position: absolute; z-index: 1;
+    bottom: 120%; left: 50%; margin-left: -75px;
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .tooltip:hover .tooltiptext {
+    visibility: visible; opacity: 1;
+  }
+  /* 오퍼레이터 토글버튼 */
+  .filter-toggle-group {
+    display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;
+  }
+  .filter-toggle-group button {
+    padding: 6px 10px;
+    border: none;
+    background: #888;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  .filter-toggle-group button.active {
+    background: #337ab7;
+  }
+  .filter-controls {
+    margin-bottom: 12px;
+  }
+  .filter-controls button {
+    padding: 5px 10px;
+    margin-right: 10px;
+    cursor: pointer;
+  }
+  /* 시뮬레이션 영역 */
+  #simulator {
+    margin-top: 20px;
+    border-top: 2px solid #ccc;
+    padding-top: 10px;
+  }
+  #simulator img {
+    width: 50px; height: 50px; margin: 4px; border-radius: 5px; cursor: pointer;
+    border: 2px solid transparent;
+  }
+  #simulator img.banned {
+    opacity: 0.4;
+    border-color: red;
+  }
+  #simulator img.selected {
+    border-color: green;
+  }
+  #simulator-info {
+    margin-top: 10px;
+  }
+  button#sim-clear {
+    margin-top: 10px; padding: 6px 14px; cursor: pointer;
+  }
+#ability-list .card img {
+  width: 50px;   /* 고정 크기 지정 */
+  height: 50px;  /* 필요 시 비율 맞춰 */
+  object-fit: contain;  /* 이미지 비율 유지 */
+  border-radius: 4px;
+}
+/* 오퍼탭 이미지 크기 */
+#operator-list .card img {
+  width: 80px;   /* 예: 80px */
+  height: 80px;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
+/* 도구탭 이미지 크기 */
+#tools-list .card img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
+/* 시뮬탭 이미지 크기 */
+#sim-operators img,
+#sim-oaths img {
+  width: 60px;
+  height: 60px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+</style>
+</head>
+<body>
+<header>
+  <nav class="tabs">
+    <div class="tab active" data-tab="ability">영능</div>
+    <div class="tab" data-tab="oath">맹약</div>
+    <div class="tab" data-tab="operator">오퍼레이터</div>
+    <div class="tab" data-tab="tools">도구</div>
+    <div class="tab" data-tab="sim">시뮬</div>
+  </nav>
+</header>
+
+<main>
+  <!-- 영능 탭 -->
+  <section id="ability" class="active">
+    <div class="card-list" id="ability-list"></div>
+  </section>
+
+  <!-- 맹약 탭 -->
+	<section id="oath">
+	  <h2>핵심 맹약</h2>
+	  <div id="core-oath-list" class="card-list"></div>
+
+	  <h2>보조 맹약</h2>
+	  <div id="support-oath-list" class="card-list"></div>
+	</section>
+
+  <!-- 오퍼레이터 탭 -->
+  <section id="operator">
+    <div class="filter-controls">
+      <div>핵심 맹약:</div>
+      <div class="filter-toggle-group" id="core-oath-filters"></div>
+      <div>보조 맹약:</div>
+      <div class="filter-toggle-group" id="support-oath-filters"></div>
+      <div>단계:</div>
+      <div class="filter-toggle-group" id="stage-filters"></div>
+      <div>특성:</div>
+      <div class="filter-toggle-group" id="trait-filters"></div>
+      <button id="deselect-all">전체 해제</button>
+    </div>
+    <div id="operator-list"></div>
+  </section>
+
+  <!-- 도구 탭 -->
+	<section id="tools" style="position: relative;">
+	  <!-- 고정 조합법 이미지 (작은 이미지) -->
+	  <div id="combo-preview" style="margin-bottom: 15px; text-align:center; position: relative; display: inline-block; cursor: pointer;">
+		<img src="images/조합법.png" alt="조합법 이미지" 
+			 style="max-width:300px; max-height:300px; border:1px solid #ccc; border-radius:6px;" />
+	  </div>
+
+	  <!-- 큰 이미지 표시용 숨김 영역 -->
+	  <div id="combo-large-container">
+		  <img id="combo-large-img" src="" alt="" style="width:80%; height:auto;" />
+		</div>
+
+	  <!-- 도구 카드 목록 -->
+	  <h2>도구 목록</h2>
+	  <div id="tools-list"></div>
+	</section>
+
+  <!-- 시뮬 탭 -->
+  <section id="sim">
+	  <div id="sim-help-text" style="margin-bottom: 12px; font-size: 14px; color: #666;">
+		좌클릭으로 오퍼 추가, 우클릭으로 오퍼 밴
+	  </div>
+	  <!-- 선택된 오퍼 목록을 상단으로 옮김 -->
+	  <div id="sim-selected-operators" style="margin-bottom: 15px;">
+		<h3>선택된 오퍼레이터</h3>
+		<div id="sim-operators"></div>
+	  </div>
+		<div id="simulator-info">
+		<div>선택된 오퍼레이터 수: <span id="sim-selected-count">0</span> / 8</div>
+		<button id="sim-clear">초기화</button>
+	  </div>
+	  <div id="sim-oath-status" style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 10px;"></div>
+	  <div id="sim-oaths"></div>
+
+	  
+	</section>
+</main>
+
+<script>
+const data = {
+  abilities: [
+	  { id: 1, name: "와파린", effect: "전투 시작 시 서로 다른 등급의 무작위 오퍼레이터 1명의 맹약 스택 +2<br><span style='color: green;'><표준 시뮬레이션> 모든 오퍼레이터의 공격력, 방어력, 체력 +30%</span>", hp: 27, img: "images/卫戍协议：盟约_策略发起人_华法琳.png" },
+	  { id: 2, name: "아미야", effect: "맹약이 2/3/4+개 이상 활성화될 시 모든 오퍼레이터의 공격력, 체력이 각각 +15%/30%/50%<br><span style='color: green;'><표준 시뮬레이션> 모든 오퍼레이터의 공격력, 방어력, 체력 +30%</span>", hp: 30, img: "images/卫戍协议：盟约_策略发起人_阿米娅.png" },
+	  { id: 3, name: "두요야", effect: "매 라운드 첫 2회 새로고침이 특수 새로고침으로 변경; <br>[염국] 오퍼레이터 한 명이 무조건 등장<br><span style='color: green;'><표준 시뮬레이션> 모든 오퍼레이터의 공격력, 방어력, 체력 +30%</span>", hp: 26, img: "images/卫戍协议：盟约_策略发起人_杜遥夜.png" },
+	  { id: 4, name: "골리앗", effect: "초기 목표 체력 45<br><span style='color: green;'><표준 시뮬레이션> 모든 오퍼레이터의 공격력, 방어력, 체력 +30%</span>", hp: 45, img: "images/卫戍协议：盟约_策略发起人_歌利亚.png" },
+	  { id: 5, name: "오키드", effect: "새로고침이 특수 새로고침으로 변경; <br>반드시 두 명의 동일한 오퍼레이터 등장, 한 명은 빙결 상태 10라운드 도달 시 <호출 모듈> 1개 획득; <br>장착 시 장착자와 같은 맹약의 오퍼레이터로 새로고침함", hp: 27, img: "images/卫戍协议：盟约_策略发起人_梓兰.png" },
+	  { id: 6, name: "피츠로이", effect: "1/4/7/10라운드에 <행운의 동전> 1개 획득; <br>장착 시 1~6원 획득", hp: 23, img: "images/卫戍协议：盟约_策略发起人_小贾斯汀.png" },
+	  { id: 7, name: "에르망가드르", effect: "전투 중 오퍼레이터가 쓰러질 시 두 번까지 즉시 부활", hp: 27, img: "images/卫戍协议：盟约_策略发起人_埃芒加德.png" },
+	  { id: 8, name: "리", effect: "1,2라운드 돈을 3라운드에 획득<br>3라운드 준비 기간 돌입 시 무작위 2, 4등급 오퍼레이터 1명씩 획득", hp: 27, img: "images/卫戍协议：盟约_策略发起人_老鲤.png" },
+	  { id: 9, name: "키라라", effect: "20원 소모할 때마다 현재 상점 레벨 이하 등급의 무작위 오퍼레이터 한 명 획득", hp: 26, img: "images/卫戍协议：盟约_策略发起人_绮良.png" },
+	  { id: 10, name: "페페", effect: "상점 레벨이 2,4,6에 도달할 때마다 특수 새로고침 획득; <br>특수 새로고침 시 가급적 [사르곤] 오퍼레이터만 등장", hp: 23, img: "images/卫戍协议：盟约_策略发起人_佩佩.png" },
+	  { id: 11, name: "헤럴드", effect: "4라운드부터 매 2라운드마다 무작위 [빅토리아] 오퍼레이터 1명 획득", hp: 23, img: "images/卫戍协议：盟约_策略发起人_哈洛德.png" },
+	  { id: 12, name: "시우루스", effect: "효과12매 라운드 처음 구매하는 [쉐라그] 오퍼레이터 가격 1원", hp: 24, img: "images/卫戍协议：盟约_策略发起人_休露丝.png" },
+	  { id: 13, name: "파가니니", effect: "55원 소모 시 4등급 이상의 무작위 정예화된 [라테라노] 오퍼레이터 한 명 획득", hp: 24, img: "images/卫戍协议：盟约_策略发起人_潘格尼尼.png" },
+	  { id: 14, name: "클레멘티아", effect: "[에기르] 오퍼레이터가 쓰러질 시 해당 오퍼레이터의 등급만큼의 맹약 스택 획득", hp: 26, img: "images/卫戍协议：盟约_策略发起人_克莱门莎.png" },
+	  { id: 15, name: "엠퍼러", effect: "아군 오퍼레이터의 재배치 시간 -50%", hp: 26, img: "images/卫戍协议：盟约_策略发起人_大帝.png" },
+	  { id: 16, name: "멀베리", effect: "전투 시작 시 가장 오른쪽에 있는 모든 아군이 다음 효과 획득: <br>공격할 때마다 20% 확률로 보호막 1겹 획득 (최대 1겹)", hp: 22, img: "images/卫戍协议：盟约_策略发起人_桑葚.png" },
+	  { id: 17, name: "휴머스", effect: "지상 오퍼레이터가 스킬 종료 시 주변 4칸 오퍼레이터 중 무작위 한 명이 SP3 획득", hp: 24, img: "images/卫戍协议：盟约_策略发起人_休谟斯.png" },
+	  { id: 18, name: "퀸투스", effect: "3라운드부터 <돌연변이 세포> 1개 획득; <br>장착 시 장착자가 다음 라운드 시작 시 한 등급 높은 무작위 오퍼레이터로 변함 (최대 6등급)", hp: 31, img: "images/卫戍协议：盟约_策略发起人_昆图斯.png" },
+	  { id: 19, name: "유넥티스", effect: "모든 전장에 <더블 리즈> 1개 등장; <br>원거리 마법 공격을 하며 목표 적에게 취약 효과 부여 (업그레이드 가능)", hp: 38, img: "images/卫戍协议：盟约_策略发起人_森蚺.png" },
+	  { id: 20, name: "위", effect: "8라운드 시작 시 활성화된 맹약이 하나밖에 없을 경우 해당 맹약의 스택 +40, <br>그렇지 않으면 활성화된 모든 맹약의 스택 +12", hp: 32, img: "images/卫戍协议：盟约_策略发起人_余.png" },
+	  { id: 21, name: "도베르만", effect: "매 2라운드마다 특수 아츠 <교편> 획득, <br>사용 시 해당 라운드에서 추가 적 등장, 완벽한 전투를 끝마칠 시 돈 추가 획득", hp: 30, img: "images/卫戍协议：盟约_策略发起人_杜宾.png" },
+	  { id: 22, name: "캐서린", effect: "상점 업그레이드 시 장비 3개 중 한개 선택", hp: 26, img: "images/卫戍协议：盟约_策略发起人_凯瑟琳.png" },
+	  { id: 23, name: "말키위츠", effect: "초기에 상업 포장법 1개 획득<br>오퍼레이터를 8명 팔 때마다 장착자와 동일한 오퍼레이터 획득", hp: 30, img: "images/卫戍协议：盟约_策略发起人_马克维茨.png" },
+	  { id: 24, name: "칼라이샤", effect: "아군 오퍼레이터가 쓰러지면 나머지 아군 유닛 공격력 +20% <br>(최대 200%까지, 지속 시간은 쓰러지거나 전투가 끝날 때까지)", hp: 26, img: "images/卫戍协议：盟约_策略发起人_卡莱莎.png" },
+	  { id: 25, name: "첸", effect: "언덕 오퍼레이터가 입히는 피해가 적 물방/마방에 따라 물뎀/마뎀으로 전환", hp: 22, img: "images/卫戍协议：盟约_策略发起人_陈.png" },
+	  { id: 26, name: "다마즈티", effect: "5라운드 시작시 변형 구성체 1개 획득<br>장착자가 추가 맹약 획득 (같이 장착한 다른 도구에 따름)", hp: 29, img: "images/卫戍协议：盟约_策略发起人_“变形者集群”.png" },
+	  { id: 27, name: "피스", effect: "초기에 예비 보조 한명 획득, <br>기본적으로 조화/협력 오퍼레이터 맹약이며 가하는 피해의 일부를 신경(우선)/소각/쇠약으로 전환", hp: 24, img: "images/卫戍协议：盟约_策略发起人_Pith.png" },
+	  { id: 28, name: "시", effect: "초기에 특수 아츠 <두루마리> 획득, <br>사용 시 아츠 범위 내 오퍼레이터 1명을 복사 (정예화 여부, 들고있는 아이템 포함)", hp: 28, img: "images/卫戍协议：盟约_策略发起人_夕.png" },
+	  { id: 29, name: "캔낫", effect: "매 라운드 남은 돈 보존, 5원 이상 남기면 1원 더 획득", hp: 27, img: "images/卫戍协议：盟约_策略发起人_坎诺特.png" },
+	  { id: 30, name: "덕로드", effect: "5라운드부터 본인 및 아군이 덕로드/고프닉/눈물 흘리는 사내/동글이 만날수있음, 처치 시 1원 획득", hp: 29, img: "images/卫戍协议：盟约_策略发起人_鸭爵.png" },
+	],
+	oaths: [
+	  { id: 1, name: "염국", effect: "[염국] 오퍼레이터의 공격력 상승 <br><span style='color: #2093df;'>+(23+0.9x스택)%</span><br><span style='color: green;'><6명 이상></span> 전투 시작 시 염우 소환, 공격력과 체력은 [염국] 오퍼레이터들의 공격력과 체력 총합의 <span style='color: #2093df;'>30%</span><br>염우는 멸악의 화염을 사용해 공격 시 공격력의 <span style='color: #2093df;'>20%</span>의 화상 피해를 입히고 주위 적에게 <span style='color: #2093df;'>20%</span>의 원소 취약 부여", needCount: 3, type: "core", img: "images/염국.png" },
+	  { id: 2, name: "사르곤", effect: "[사르곤] 오퍼레이터가 스킬 발동 시 모든 [사르곤] 오퍼레이터의 공격 속도 +12 (최대 +300), 일정 시간동안 지속 <br>(5+0.22x스택 초, 매 스택마다 지속시간은 독립 계산) <br><6명 이상> 스킬 발동 시 모든 [사르곤] 오퍼레이터가 지속 시간 동안 공격력 12% 증가 (최대 300%)", needCount: 3, type: "core", img: "images/사르곤.png" },
+	  { id: 3, name: "빅토리아", effect: "장비를 장착한 [빅토리아] 오퍼레이터가 가하는 피해 증가<br>+(120+0.8x스택)%<br><25스택마다> 무작위 효과가 붙은 빅토리아식 망치 획득<br><6명 이상> 장비를 장착한 [빅토리아] 오퍼레이터의 공격력 80% 증가", needCount: 3, type: "core", img: "images/빅토리아.png" },
+	  { id: 4, name: "쉐라그", effect: "[쉐라그] 오퍼레이터가 가하는 피해 130% 증가,<br>냉기 및 빙결 상태의 적에게는 추가 효과 획득 (135%+1x스택)%<br><6명 이상> 전투 중 매 25초마다 한 차례의 눈폭풍이 불어 전장 위의 모든 적에게 일정 시간동안 냉기 효과 부여<br>(20+0.1x스택)초", needCount: 3, type: "core", img: "images/쉐라그.png" },
+	  { id: 5, name: "라테라노", effect: "[라테라노] 오퍼레이터가 스킬 발동 시 얻는 탄약량 증가<br> +(5+1.5x스택)%<br><6명 이상> [라테라노] 오퍼레이터가 탄약을 1발 소모할 때마다,<br>모든 [라테라노] 오퍼레이터의 공격력 +4% 증가, 최대 +180%까지", needCount: 3, type: "core", img: "images/라테라노.png" },
+	  { id: 6, name: "에기르", effect: "[에기르] 오퍼레이터의 체력 증가 +(35+1x스택)%<br>전투 시작 시 [에기르] 오퍼레이터는 자신 전방 한 칸의<br>오퍼레이터를 잡아먹어 6000의 물리 피해를 주고,<br>자신은 기본 공격력과 저지 가능 수를 얻음<br>잡아먹힌 오퍼레이터의 등급에 해당하는 만큼 맹약 스택 획득<br><5명 이상> 전투 중 처음으로 쓰러진 두 명의 [에기르]<br>오퍼레이터는 즉시 부활", needCount: 3, type: "core", img: "images/에기르.png" },
+	  { id: 7, name: "투자자", effect: "오퍼레이터의 획득 시 특성이 2회씩 발동<br><70스택 이상> 획득 시 특성이 3회씩 발동 <br>(준비 구역의 [투자자] 오퍼레이터 또한 조건에 영향을 줌)", needCount: 3, type: "support", img: "images/투자자.png" },
+	  { id: 8, name: "조화", effect: "[조화] 오퍼레이터는 핵심 맹약[염국] [사르곤] [빅토리아][쉐라그] [라테라노] [에기르]의 필요 인원수 +1<br>[조화] 오퍼레이터 또한 핵심 맹약의 효과를 받을 수 있음", needCount: 1, type: "support", img: "images/조화.png" },
+	  { id: 9, name: "선견", effect: "<10스택마다> 자금 2획득<br><100스택 첫 도달 시> 상점 내 모든 오퍼레이터의 가격이 영구적으로 1만큼 감소 <br>(준비 구역의 [선견] 오퍼레이터 또한 조건에 영향을 줌)", needCount: 2, type: "support", img: "images/선견.png" },
+	  { id: 10, name: "정확", effect: "언덕 오퍼레이터의 공격력 증가 <br>+(10+1.2x스택)%<br><3명 이상> 언덕 오퍼레이터가 공격 시 적의 방어력과 마법 저항을 일정량 무시, 공격 대상의 특수 능력을 2초간 침묵", needCount: 2, type: "support", img: "images/정확.png" },
+	  { id: 11, name: "견고", effect: "모든 오퍼레이터의 체력 증가 <br>+(30+1.25x스택)%<br><3명 이상> 지상의 [견고]가 아닌 오퍼레이터가 피해를 받을 시 받는 피해의 40%만큼을 모든 [견고] 오퍼레이터에게 균등 분배", needCount: 2, type: "support", img: "images/견고.png" },
+	  { id: 12, name: "급습", effect: "[급습] 오퍼레이터의 스킬이 준비되었을 때 주변에 적이 없다면 즉시 지상의 적 한 명 주위로 재배치되어 스킬 발동, <br>스킬 지속 시간동안 공격력과 체력 증가 (10+1x스택)% <br><30스택 이상> 모든 오퍼레이터의 재배치 비용 50% 감소", needCount: 2, type: "support", img: "images/급습.png" },
+	  { id: 13, name: "기적", effect: "상점 새로고침 시 일정 확률로 다음 번 새로고침이 무료 (25+0.3x스택)%<br><50스택마다> 자금 10 획득<br>(준비 구역의 [기적] 오퍼레이터 또한 조건에 영향을 줌)", needCount: 2, type: "support", img: "images/기적.png" },
+	  { id: 14, name: "불굴", effect: "지상 오퍼레이터가 쓰러질 시 일정 확률로 즉시 재배치 (18+0.4x스택)%<br><3명 이상>지상 오퍼레이터가 쓰러질 시 모든 오퍼레이터의 SP +5", needCount: 2, type: "support", img: "images/불굴.png" },
+	  { id: 15, name: "신속", effect: "[신속] 오퍼레이터가 스킬 종료 시 일정 확률로 즉시 SP 10 회복 <br>(20+0.35x스택)%<br><40스택 이상> 모든 오퍼레이터가 스킬 종료 시 동일한 확률로 즉시 SP 15 추가 회복", needCount: 2, type: "support", img: "images/신속.png" },
+	  { id: 16, name: "조력", effect: "모든 오퍼레이터의 방어력 증가 (15+1.2x스택)%<br>재배치 시간 30% 감소 <br>준비 시간 종료 시 활성화된 모든 맹약의 스택 수 2증가 <br><3명 이상> 대신 4 증가", needCount: 2, type: "support", img: "images/조력.png" },
+	  { id: 17, name: "영민", effect: "[영민] 오퍼레이터 주위 8칸에 있는 오퍼레이터의 공격 속도 증가 <br>+(10+1x스택)<br><20스택 이상> 상점에서 첫 새로고침 시 출현하는 장비의 가격 1로 감소", needCount: 2, type: "support", img: "images/영민.png" },
+	  { id: 18, name: "협력", effect: "모든 오퍼레이터의 받는 물리 및 마법 피해 20% 감소", needCount: 3, type: "support", img: "images/협력.png" },
+	],
+  operators: [
+	// 1단계
+	{ id: 1, name: "인사이더", oaths: ["라테라노"], stage: 1, trait: "기타", traitDescription: "[라테라노]﻿ 5스택마다 본 오퍼레이터의 공격 속도 +1(2)", img: "images/头像_隐现.png" },
+	{ id: 2, name: "쿠리어", oaths: ["쉐라그","불굴"], stage: 1, trait: "획득 시", traitDescription: "<획득 시> 자신 소속 맹약 스택 +2(4) (맹약 활성화될 필요 없음)﻿", img: "images/头像_讯使.png" },
+	{ id: 3, name: "레이즈", oaths: ["염국"], stage: 1, trait: "획득 시", traitDescription: "<획득 시> 현재 상점 레벨 만큼의 염국 스택 획득 (정예화 시 두 배) <br>(맹약 활성화될 필요 없음)", img: "images/头像_惊蛰.png" },
+	{ id: 4, name: "스펙터", oaths: ["에기르"], stage: 1, trait: "기타", traitDescription: "쓰러질 시 활성화된 에기르 스택 +2(4)]", img: "images/头像_幽灵鲨.png" },
+	{ id: 5, name: "비그나", oaths: ["불굴"], stage: 1, trait: "기타", traitDescription: "가격 1로 변경", img: "images/头像_红豆.png" },
+	{ id: 6, name: "메이", oaths: ["빅토리아","정확"], stage: 1, trait: "획득 시", traitDescription: "<획득 시> 자신 소속 맹약 스택 +2(4) (맹약 활성화될 필요 없음)", img: "images/头像_梅.png" },
+	{ id: 7, name: "라플란드", oaths: ["협력"], stage: 1, trait: "기타", traitDescription: "입히는 피해가 약점 피해로 전환 <br>(적의 방어력과 아츠 저항에 따라서 물리 피해와 아츠 피해로 전환)﻿", img: "images/头像_拉普兰德.png" },
+	{ id: 8, name: "텍사스", oaths: ["신속"], stage: 1, trait: "기타", traitDescription: "입히는 피해가 약점 피해로 전환 <br>(적의 방어력과 아츠 저항에 따라서 물리 피해와 아츠 피해로 전환)﻿", img: "images/头像_德克萨斯.png" },
+	{ id: 9, name: "케이퍼", oaths: ["정확"], stage: 1, trait: "기타", traitDescription: "드론 적 공격 시 공격력 150% (200%)로 증가﻿", img: "images/头像_跃跃.png" },
+	{ id: 10, name: "쿠오라", oaths: ["견고"], stage: 1, trait: "준비 기간 종료 시", traitDescription: "<준비 기간 종료 시> 같은 가로줄에 오퍼레이터가 3명 이상일 시 활성화된 견고﻿ 스택 +3(6)", img: "images/头像_蛇屠箱.png" },
+	{ id: 11, name: "기타노", oaths: ["선견","기적"], stage: 1, trait: "획득 시", traitDescription: "<획득 시> 자신 소속 맹약 스택 +2(4) (맹약 활성화될 필요 없음)﻿", img: "images/头像_远山.png" },
+	{ id: 12, name: "맨티코어", oaths: ["사르곤","급습"], stage: 1, trait: "기타", traitDescription: "SP 자연 회복 속도 +0.15/초(+0.3/초)﻿", img: "images/头像_狮蝎.png" },
+	{ id: 13, name: "새비지", oaths: ["조력"], stage: 1, trait: "판매 시", traitDescription: "<판매 시> 다음 준비 기간에 추가로 1원(2원) 획득﻿", img: "images/头像_暴行.png" },
+	{ id: 14, name: "푸딩", oaths: ["영민"], stage: 1, trait: "획득 시", traitDescription: "<획득 시> 자신 소속 맹약 스택 +3(6) (맹약 활성화될 필요 없음)﻿", img: "images/头像_布丁.png" },
+	// 2단계
+	{ id: 15, name: "이그제큐터", oaths: ["라테라노","정확"], stage: 2, trait: "기타", traitDescription: "자기 앞 한 칸의 오퍼레이터가 탄약을 7발 소모할 시 활성화된 라테라노 스택 +1(2)", img: "images/头像_送葬人.png" },
+	{ id: 16, name: "사일런스", oaths: ["선견"], stage: 2, trait: "준비 기간 돌입 시", traitDescription: "<준비 시간 돌입 시> 자신의 활성화된 맹약 스택 +2(4)﻿", img: "images/头像_赫默.png" },
+	{ id: 17, name: "마터호른", oaths: ["쉐라그","견고"], stage: 2, trait: "획득 시", traitDescription: "<획득 시> 자신 소속 맹약 스택 +3(6) (맹약 활성화될 필요 없음)﻿", img: "images/头像_角峰.png" },
+	{ id: 18, name: "완칭", oaths: ["염국"], stage: 2, trait: "준비 기간 종료 시", traitDescription: "<준비 시간 종료 시> 이번 라운드 획득한 오퍼레이터 1명당 활성화된 [염국]﻿ 스택 +1(2)", img: "images/头像_万顷.png" },
+	{ id: 19, name: "해럴드", oaths: ["빅토리아","쉐라그"], stage: 2, trait: "획득 시", traitDescription: "<획득 시> 다음 준비 기간에 추가로 1원(2원) 획득", img: "images/头像_哈洛德.png" },
+	{ id: 20, name: "파피루스", oaths: ["사르곤"], stage: 2, trait: "기타", traitDescription: "처음으로 스킬 발동 시 활성화된 사르곤﻿ 스택 +4(8)", img: "images/头像_莎草.png" },
+	{ id: 21, name: "언더플로우", oaths: ["에기르"], stage: 2, trait: "기타", traitDescription: "바다 괴물 공격 시 공격력 150%(200%)로 증가﻿", img: "images/头像_深巡.png" },
+	{ id: 22, name: "헤비레인", oaths: ["사르곤","견고"], stage: 2, trait: "기타", traitDescription: "[사르곤]﻿ 및 [견고] 3스택마다 본 오퍼레이터의 방어력 +1% (+2%)", img: "images/头像_暴雨.png" },
+	{ id: 23, name: "우타게", oaths: ["급습","조력"], stage: 2, trait: "기타", traitDescription: "적을 1명 쓰러트릴 때마다 활성화된 급습﻿ 스택 +1(2)", img: "images/头像_宴.png" },
+	{ id: 24, name: "락락", oaths: ["빅토리아","영민"], stage: 2, trait: "획득 시", traitDescription: "<획득 시> 무작위 락락의 커스텀 제품 1개(2개) 제작﻿", img: "images/头像_洛洛.png" },
+	{ id: 25, name: "카제마루", oaths: ["기적","불굴"], stage: 2, trait: "기타", traitDescription: "두 명만 있어도 정예화 가능", img: "images/头像_风丸.png" },
+	{ id: 26, name: "그라벨", oaths: ["급습","불굴"], stage: 2, trait: "기타", traitDescription: "쓰러질 시 활성화된 불굴﻿ 스택 +3(6)", img: "images/头像_砾.png" },
+	{ id: 27, name: "틴맨", oaths: ["신속","영민"], stage: 2, trait: "준비 기간 돌입 시", traitDescription: "<준비 기간 돌입 시> 자신의 활성화된 맹약 스택 +2(4)﻿", img: "images/头像_锡人.png" },
+	{ id: 28, name: "실론", oaths: ["조력"], stage: 2, trait: "준비 기간 종료 시", traitDescription: "현재 활성화된 맹약 중 스택 수가 가장 많은 맹약의 스택 수+2(4)<br>해당 오퍼레이터가 준비 구역에 있는 동안에도 효과 발동", img: "images/头像_锡兰.png" },
+	{ id: 29, name: "아렌", oaths: ["라테라노"], stage: 2, trait: "기타", traitDescription: "드론 적 공격 시 공격력 150%(200%)로 증가﻿", img: "images/头像_芳汀.png" },
+
+	  // 3단계
+	  { id: 30, name: "엑시아", oaths: ["라테라노","기적"], stage: 3, trait: "획득 시", traitDescription: "<획득 시> 다음 준비 기간에 추가로 1원 (2원) 획득﻿", img: "images/头像_能天使.png" },
+	{ id: 31, name: "오로라", oaths: ["쉐라그"], stage: 3, trait: "기타", traitDescription: "공격 범위 내 적이 빙결 시 최대 체력의 1.5%(2.5%) 회복﻿", img: "images/头像_极光.png" },
+	{ id: 32, name: "와이후", oaths: ["염국","불굴"], stage: 3, trait: "획득 시", traitDescription: "<획득 시> 현재 활성화된 맹약 중 스택 수가 가장 많은 맹약의 스택 수 +3(6)﻿", img: "images/头像_槐琥.png" },
+	{ id: 33, name: "스와이어 디 엘리건트 위트", oaths: ["염국","투자자"], stage: 3, trait: "준비 기간 종료 시", traitDescription: "<준비 기간 종료 시> 다음 준비 기간에 추가로 1원 (2원) 획득﻿ <br> ([염국] / [투자자] 활성화 시 준비 구역에서도 발동)", img: "images/头像_琳琅诗怀雅.png" },
+	{ id: 34, name: "스카디", oaths: ["에기르","견고","급습"], stage: 3, trait: "기타", traitDescription: "유닛을(적을) 3명 쓰러트릴 때마다 활성화된 [에기르]﻿ [견고] [급습]의 스택 +1(2)", img: "images/头像_斯卡蒂.png" },
+	{ id: 35, name: "필라에", oaths: ["사르곤"], stage: 3, trait: "기타", traitDescription: "스킬 발동 시 활성화된 [사르곤﻿] 스택 +4(8)", img: "images/头像_菲莱.png" },
+	{ id: 36, name: "인포서", oaths: ["라테라노"], stage: 3, trait: "준비 기간 종료 시", traitDescription: "<준비 기간 종료 시> 자신과 자신 뒤 오퍼레이터 한 명의 활성화된 맹약 스택 +3(6)﻿", img: "images/头像_见行者.png" },
+	{ id: 37, name: "하이디", oaths: ["빅토리아","조력"], stage: 3, trait: "준비 기간 종료 시", traitDescription: "<준비 기간 종료 시> 전장 내 서로 다른 등급의 [빅토리아]﻿ 오퍼레이터 한명마다 활성화된 [빅토리아] 스택 +2(4)", img: "images/头像_海蒂.png" },
+	{ id: 38, name: "허니베리", oaths: ["협력"], stage: 3, trait: "획득 시", traitDescription: "<획득 시> 활성화된 무작위 맹약 하나의 스택 +2(4), 두 번 반복﻿", img: "images/头像_蜜莓.png" },
+	{ id: 39, name: "안드레아나", oaths: ["에기르","정확"], stage: 3, trait: "기타", traitDescription: "바다 괴물 공격 시 공격력 150%(200%)로 증가﻿", img: "images/头像_安哲拉.png" },
+	{ id: 40, name: "스노우헌터", oaths: ["쉐라그","정확"], stage: 3, trait: "획득 시", traitDescription: "<획득 시> 자신 소속 맹약 스택 +6(12) (맹약 활성화될 필요 없음)﻿", img: "images/头像_雪猎.png" },
+	{ id: 41, name: "에단", oaths: ["협력"], stage: 3, trait: "획득 시", traitDescription: "<획득 시> 인원 수가 가장 많은 맹약의 오퍼레이터 1명 획득 (자신 제외)﻿", img: "images/头像_伊桑.png" },
+	{ id: 42, name: "미니멀리스트", oaths: ["사르곤","영민"], stage: 3, trait: "기타", traitDescription: "가격 1로 변경﻿", img: "images/头像_至简.png" },
+	{ id: 43, name: "쉐라", oaths: ["쉐라그","선견"], stage: 3, trait: "획득 시", traitDescription: "<획득 시> 쉐라그의 만년빙 1개(2개) 획득﻿", img: "images/头像_耶拉.png" },
+	
+	// 4단계
+	{ id: 44, name: "산크타 믹사파라토", oaths: ["라테라노","견고"], stage: 4, trait: "기타", traitDescription: "[라테라노]﻿ 및 [견고] 3스택마다 본 오퍼레이터의 방어력 +1%(+2%)", img: "images/头像_信仰搅拌机.png" },
+	{ id: 45, name: "피아메타", oaths: ["라테라노"], stage: 4, trait: "기타", traitDescription: "자기 앞 3칸 안(6칸 안)의 오퍼레이터가 탄약을 10발 소모할 시 활성화된 [라테라노]﻿ 스택 +2", img: "images/头像_菲亚梅塔.png" },
+	{ id: 46, name: "프라마닉스", oaths: ["쉐라그","조력"], stage: 4, trait: "기타", traitDescription: "공격 범위 내 적이 빙결 시 20%(40%) 확률로 활성화된 [쉐라그]﻿ 스택 +1", img: "images/头像_初雪.png" },
+	{ id: 47, name: "이네스", oaths: ["선견","급습"], stage: 4, trait: "준비 기간 종료 시", traitDescription: "<준비 기간 종료 시> 자신의 활성화된 맹약 스택 +4(8)﻿", img: "images/头像_伊内丝.png" },
+	{ id: 48, name: "유넥티스", oaths: ["사르곤"], stage: 4, trait: "획득 시", traitDescription: "<획득 시> 신속 전투 식량 1개(2개) 획득﻿", img: "images/头像_森蚺.png" },
+	{ id: 49, name: "크루스 더 킨 글린트", oaths: ["정확"], stage: 4, trait: "기타", traitDescription: "자기 앞 한 칸의 오퍼레이터가 스킬 발동 시 정확﻿ 스택 +1(+2) 특성을 추가로 획득 <br>(매 전투마다 최대 10(20)스택까지 쌓을 수 있음)", img: "images/头像_寒芒克洛丝.png" },
+	{ id: 50, name: "백파이프", oaths: ["빅토리아","선견","불굴"], stage: 4, trait: "기타", traitDescription: "적을 3명 쓰러트릴 때마다 활성화된 빅토리아﻿ [선견] [불굴]의 스택 +1(2)", img: "images/头像_风笛.png" },
+	{ id: 51, name: "마운틴", oaths: ["투자자"], stage: 4, trait: "준비 기간 종료 시", traitDescription: "<준비 기간 종료 시> 이번 턴 구매한 오퍼레이터 한 명마다 활성화된 [투자자]﻿ 스택 +1(2)", img: "images/头像_山.png" },
+	{ id: 52, name: "미즈키", oaths: ["에기르","신속"], stage: 4, trait: "기타", traitDescription: "[에기르]﻿ 및 [신속] 3스택마다 본 오퍼레이터의 공격력 +1% (+2%)", img: "images/头像_水月.png" },
+	{ id: 53, name: "불피스폴리아", oaths: ["급습","신속"], stage: 4, trait: "획득 시", traitDescription: "<획득 시> 자신 소속 맹약 스택 +8(16) (맹약 활성화될 필요 없음)﻿", img: "images/头像_忍冬.png" },
+	{ id: 54, name: "와파린", oaths: ["기적"], stage: 4, trait: "기타", traitDescription: "자기 앞 한 칸의 오퍼레이터가 스킬 발동 시 활성화된 소속 맹약의 스택 +1(+2) 특성을 추가로 획득 <br>(매 전투마다 최대 10(20)스택까지 쌓을 수 있음)﻿", img: "images/头像_华法琳.png" },
+	{ id: 55, name: "아스트젠", oaths: ["기적"], stage: 4, trait: "준비 기간 종료 시", traitDescription: "<준비 기간 종료 시> 다음 준비 기간에 추가로 1원 (2원) 획득﻿", img: "images/头像_星源.png" },
+	{ id: 56, name: "노시스", oaths: ["쉐라그","영민"], stage: 4, trait: "기타", traitDescription: "SP 자연 회복 속도 +0.15/초(+0.3/초)﻿", img: "images/头像_灵知.png" },
+	{ id: 57, name: "레온하르트", oaths: ["정확","신속"], stage: 4, trait: "준비 기간 종료 시", traitDescription: "<준비 기간 종료 시> 자신의 활성화된 맹약 스택 +4(8)﻿", img: "images/头像_莱恩哈特.png" },
+	{ id: 58, name: "멀베리", oaths: ["염국","조력"], stage: 4, trait: "획득 시", traitDescription: "<획득 시> 자신 소속 맹약 스택 +3(6) (맹약 활성화될 필요 없음)﻿", img: "images/头像_桑葚.png" },
+	{ id: 59, name: "텍사스 디 오메르토사", oaths: ["급습","영민"], stage: 4, trait: "기타", traitDescription: "[급습]﻿ 3스택마다 본 오퍼레이터의 재배치 시간 -1.5%(-3%)", img: "images/头像_缄默德克萨斯.png" },
+	{ id: 60, name: "블레이즈", oaths: ["염국","빅토리아"], stage: 4, trait: "판매 시", traitDescription: "<판매 시> 블레이즈 디 이그나이팅 스파크 (또는 대상 예비 대원)로 변함 (정예화 시 두개), <br>블레이즈 디 이그나이팅 스파크는 [염국﻿]과 [빅토리아] 소속", img: "images/头像_煌.png" },
+	{ id: 61, name: "폴리닉", oaths: ["조력","협력"], stage: 4, trait: "판매 시", traitDescription: "<판매 시> 다음 준비 기간에 추가로 2원(4원) 획득﻿", img: "images/头像_亚叶.png" },
+
+	  // 5단계
+	  { id: 62, name: "이그제큐터 디 엑스 포에데레", oaths: ["라테라노","선견"], stage: 5, trait: "기타", traitDescription: "자신이 탄약을 7발 소모할 때마다 활성화된 [라테라노]﻿ 스택 +6(12), [선견] 스택 +3(6)", img: "images/头像_圣约送葬人.png" },
+	{ id: 63, name: "패신저", oaths: ["사르곤","정확"], stage: 5, trait: "기타", traitDescription: "스킬 발동 시 같은 가로줄에 오퍼레이터가 3명 있다면 활성화된 [사르곤]﻿ [정확] 스택 +2(4)", img: "images/头像_异客.png" },
+	{ id: 64, name: "블레이즈 디 이그나이팅 스파크", oaths: ["염국","빅토리아"], stage: 5, trait: "획득 시", traitDescription: "<획득 시> [염국]﻿ [빅토리아] 스택 +3(6) (맹약 활성화될 필요 없음)", img: "images/头像_烛煌.png" },
+	{ id: 65, name: "좌락", oaths: ["염국"], stage: 5, trait: "기타", traitDescription: "스킬 발동 시 [염국]﻿ 스택 +2(4) (전투 당 최대 10(20))", img: "images/头像_左乐.png" },
+	{ id: 66, name: "울피아누스", oaths: ["에기르"], stage: 5, trait: "기타", traitDescription: "[에기르]﻿ 2스택마다 본 오퍼레이터의 공격력 +1%(+2%)", img: "images/头像_乌尔比安.png" },
+	{ id: 67, name: "글래디아", oaths: ["에기르"], stage: 5, trait: "준비 기간 돌입 시", traitDescription: "<준비 기간 돌입 시> 같은 가로줄에 오퍼레이터가 3명 있다면 스카디, 스펙터, 안드레아나 중 무작위 한 명 획득 (두 번 반복)﻿", img: "images/头像_歌蕾蒂娅.png" },
+	{ id: 68, name: "수르트", oaths: ["급습"], stage: 5, trait: "기타", traitDescription: "적을 하나 쓰러트릴 때마다 활성화된 [급습]﻿ 스택 +1(2)", img: "images/头像_史尔特尔.png" },
+	{ id: 69, name: "제시카 더 리버레이티드", oaths: ["빅토리아","투자자"], stage: 5, trait: "준비 기간 돌입 시", traitDescription: "<준비 기간 돌입 시> 무작위 장비 1개(2개) 획득﻿", img: "images/头像_涤火杰西卡.png" },
+	{ id: 70, name: "시빌라이트 에테르나", oaths: ["기적","협력"], stage: 5, trait: "기타", traitDescription: "자기 앞 한 칸의 오퍼레이터가 특성을 통해 맹약 스택 획득 시 획득하는 스택을 +1(+2)﻿", img: "images/头像_魔王.png" },
+	{ id: 71, name: "스즈란", oaths: ["협력"], stage: 5, trait: "준비 기간 돌입 시", traitDescription: "<준비 기간 돌입 시> 자기 앞 한 칸(2칸 안)의 다른 오퍼레이터의 '<획득 시>' 효과를 발동시킴﻿", img: "images/头像_铃兰.png" },
+	{ id: 72, name: "사리아", oaths: ["견고"], stage: 5, trait: "준비 기간 종료 시", traitDescription: "자신 앞 한 칸 오퍼레이터가 '<준비 시간 종료 시>' 특성을 가진 경우 해당 오퍼레이터의 특성 복사﻿", img: "images/头像_塞雷娅.png" },
+	{ id: 73, name: "린", oaths: ["염국","영민"], stage: 5, trait: "준비 기간 종료 시", traitDescription: "<준비 기간 종료 시> 이번 준비 기간동안 얻은 오퍼레이터의 수만큼 활성화된 [염국]﻿ [영민함] 스택 +1(2)", img: "images/头像_林.png" },
+	{ id: 74, name: "스펙터 디 언체인드", oaths: ["에기르","불굴"], stage: 5, trait: "기타", traitDescription: "자신이 쓰러지거나 분신으로 교체할 때마다 활성화된 [에기르]﻿ 스택 +2(4)", img: "images/头像_归溟幽灵鲨.png" },
+	{ id: 75, name: "실버애쉬", oaths: ["쉐라그","투자자","기적"], stage: 5, trait: "기타", traitDescription: "공격 범위 내 적이 빙결 시 25%(50%) 확률로 활성화된 [쉐라그] 스택 +1", img: "images/头像_银灰.png" },
+	{ id: 76, name: "쏜즈 더 로드스타", oaths: ["기적","신속"], stage: 5, trait: "준비 기간 종료 시", traitDescription: "<준비 기간 종료 시> 자신과 자신 앞 한 칸의 오퍼레이터가 활성화한 맹약의 스택 +4(8)", img: "images/头像_引星棘刺.png" },
+	{ id: 77, name: "프틸롭시스", oaths: ["조력","영민"], stage: 5, trait: "준비 기간 돌입 시", traitDescription: "자신 앞 한 칸 오퍼레이터가 '<준비 시간 돌입 시>' 특성을 가진 경우 해당 오퍼레이터의 특성 복사﻿", img: "images/头像_白面鸮.png" },
+	{ id: 78, name: "로즈솔트", oaths: ["신속"], stage: 5, trait: "판매 시", traitDescription: "<판매 시> 전장 내 '<준비 기간 종료 시>' 특성을 지닌 오퍼레이터의 특성이 발동함 (배치 위치 기준으로 위랑 오른쪽에 더 가까운 오퍼레이터를 우선)﻿", img: "images/头像_瑰盐.png" },
+	{ id: 79, name: "티폰", oaths: ["정확","영민"], stage: 5, trait: "기타", traitDescription: "공격력 및 체력 +20%(40%), 핵심 맹약 3스택마다 추가로 +1% (2%) (핵심 맹약은 [염국]﻿ [사르곤] [빅토리아] [쉐라그] [라테라노] [에기르])", img: "images/头像_提丰.png" },
+	
+	// 6단계
+	{ id: 80, name: "르무엔", oaths: ["라테라노","정확"], stage: 6, trait: "기타", traitDescription: "자신이 탄약을 10발 소모할 때마다 같은 가로줄에 오퍼레이터가 3명 있다면 활성화된 [라테라노﻿] [정확] 스택 +2(4)", img: "images/头像_蕾缪安.png" },
+	{ id: 81, name: "데겐블레허", oaths: ["쉐라그","신속"], stage: 6, trait: "기타", traitDescription: "[쉐라그]﻿ 및 [신속] 3스택마다 본 오퍼레이터의 공격력 +1%(2%)", img: "images/头像_锏.png" },
+	{ id: 82, name: "위", oaths: ["염국","견고"], stage: 6, trait: "준비 기간 돌입 시", traitDescription: "<준비 기간 돌입 시> 같은 가로줄에 오퍼레이터가 3명 있다면 현재 인원 수가 가장 많은 맹약의 무작위 오퍼레이터 한 명 획득 (정예화 시 가로줄 인원수 조건 사라짐)﻿", img: "images/头像_余.png" },
+	{ id: 83, name: "스카디 더 커럽팅 하트", oaths: ["에기르"], stage: 6, trait: "기타", traitDescription: "[에기르]﻿ 10스택마다 본 오퍼레이터는 매 초마다 체력 50(100) 회복, SP 자연 회복 속도 +0.15/초(+0.3/초)", img: "images/头像_浊心斯卡蒂.png" },
+	{ id: 84, name: "나란투야", oaths: ["사르곤"], stage: 6, trait: "기타", traitDescription: "[사르곤] 8스택마다 본 오퍼레이터의 공격력 +1%(+2%)", img: "images/头像_娜仁图亚.png" },
+	{ id: 85, name: "페페", oaths: ["사르곤","불굴"], stage: 6, trait: "준비 기간 돌입 시", traitDescription: "<준비 기간 돌입 시> 행운의 동전 또는 사르곤 농축 차 1개 획득 (2회 반복) 일정 확률로 황금 모래 나침반 발견 가능﻿", img: "images/头像_佩佩.png" },
+	{ id: 86, name: "비나 빅토리아", oaths: ["빅토리아","기적"], stage: 6, trait: "준비 기간 종료 시", traitDescription: "<준비 기간 종료 시> 전장 내 서로 다른 등급의 [빅토리아]﻿ 또는 [기적] 오퍼레이터 한명마다 활성화된 [빅토리아] 및 [기적] 스택 +2(4)", img: "images/头像_维娜·维多利亚.png" },
+	{ id: 87, name: "골든글로우", oaths: ["빅토리아"], stage: 6, trait: "기타", traitDescription: "[빅토리아﻿] 3스택마다 본 오퍼레이터의 공격 속도 +1(2)", img: "images/头像_澄闪.png" },
+	{ id: 88, name: "에이야퍄들라 더 크비트 아스카", oaths: ["협력"], stage: 6, trait: "기타", traitDescription: "<스킬 발동 시 같은 가로줄에 있는 오퍼레이터 한 명마다 현재 활성화된 맹약 중 스택 수가 가장 많은 맹약의 스택 수+1(2)﻿", img: "images/头像_纯烬艾雅法拉.png" },
+	{ id: 89, name: "네크라스", oaths: ["신속"], stage: 6, trait: "준비 기간 종료 시", traitDescription: "<준비 기간 종료 시> 준비 구역 내 오퍼레이터 한 명마다 활성화된 [신속﻿] 스택 +1(2)", img: "images/头像_死芒.png" },
+	{ id: 90, name: "뮤엘시스", oaths: ["조화"], stage: 6, trait: "획득 시", traitDescription: "<획득 시> 변형 구성체 1개(2개) 획득﻿", img: "images/头像_缪尔赛思.png" },
+	{ id: 91, name: "이프리트", oaths: ["정확"], stage: 6, trait: "준비 기간 종료 시", traitDescription: "<준비 기간 종료 시> 본인 정면에 있는 모든 오퍼레이터들의 소속되어있고 활성화된 맹약의 스택 +2(4)﻿", img: "images/头像_伊芙利特.png" },
+	{ id: 92, name: "엑시아 더 뉴 커버넌트", oaths: ["라테라노"], stage: 6, trait: "획득 시", traitDescription: "<획득 시> 다음 준비 기간에 추가로 2원(4원) 획득﻿", img: "images/头像_新约能天使.png" },
+	{ id: 93, name: "루멘", oaths: ["조력","협력"], stage: 6, trait: "준비 기간 종료 시", traitDescription: "<준비 기간 종료 시> 준비 구역 내 오퍼레이터들의 소속되어있고 활성화된 맹약의 스택 +2(4)﻿", img: "images/头像_流明.png" },
+	{ id: 94, name: "사일런스 더 패러디그메틱", oaths: ["영민","협력"], stage: 6, trait: "준비 기간 종료 시", traitDescription: "<준비 기간 종료 시> 이번 턴 소모한 1원마다 활성화된 [영민함]﻿ 스택 +1(2)", img: "images/头像_淬羽赫默.png" },
+	{ id: 95, name: "머드락", oaths: ["견고","불굴"], stage: 6, trait: "기타", traitDescription: "공격력 및 체력 +20%(40%), 핵심 맹약 3스택마다 추가로 +1% (2%) (핵심 맹약은 [염국]﻿ [사르곤] [빅토리아] [쉐라그] [라테라노] [에기르])", img: "images/头像_泥岩.png" },
+],
+  tools: [
+	  { id: 1, name: "빅토리아식 망치", effect: "◇ 공격력 +20%<br>◆ 공격력 +40%", stage: 1, img: "images/卫戍协议_道具_维式重锤.png" },
+	  { id: 2, name: "에기르 닻", effect: "◇ 공격력 +35%, 공격 속도 -10﻿<br>◆ 공격력 +60%, 공격 속도 -10﻿", stage: 1, img: "images/卫戍协议_道具_阿戈尔重刃.png" },
+		{ id: 3, name: "견고한 방패", effect: "◇ 방어력 +35%﻿<br>◆ 방어력 +60%﻿", stage: 1, img: "images/卫戍协议_道具_坚守盾牌.png" },
+		{ id: 4, name: "주머니 마법진", effect: "◇ 마법 저항 +20﻿<br>◆ 마법 저항 +35﻿", stage: 1, img: "images/卫戍协议_道具_口袋法阵.png" },
+		{ id: 5, name: "불굴 발사기", effect: "◇ 재배치 시간 -30%, 체력 -30%﻿<br>◆ 재배치 시간 -50%, 체력 -30%﻿", stage: 1, img: "images/卫戍协议_道具_不屈弹射器.png" },
+		{ id: 6, name: "골리앗의 투구", effect: "◇ 체력 +35%, 배치 시 전방 한 칸에 다른 오퍼레이터가 없다면 추가로 +25%﻿<br>◆ 체력 +60%, 배치 시 전방 한 칸에 다른 오퍼레이터가 없다면 추가로 +40%﻿", stage: 2, img: "images/卫戍协议_道具_歌利亚头盔.png" },
+		{ id: 7, name: "염국 단도", effect: "◇ 스킬을 발동할 때마다 공격력 5% 증가 (최대 10회 누적)﻿<br>◆ 스킬을 발동할 때마다 공격력 8% 증가 (최대 10회 누적)﻿", stage: 2, img: "images/卫戍协议_道具_炎国短刀.png" },
+		{ id: 8, name: "작열의 빅토리아식 망치", effect: "◇ 공격력 +25%, 마법 피해를 입힐 시 피해의 10%를 소각 피해로 전환﻿<br>◆ 공격력 +40%, 마법 피해를 입힐 시 피해의 10%를 소각 피해로 전환﻿", stage: 2, img: "images/卫戍协议_道具_灼燃维式重锤.png" },
+		{ id: 9, name: "견고한 빅토리아식 망치", effect: "◇ 공격력 +25%, 처음으로 치명적인 피해를 입었을 때 체력이 1 미만으로 떨어지지 않음, 지속 15초﻿<br>◆ 공격력 +40%, 처음으로 치명적인 피해를 입었을 때 체력이 1 미만으로 떨어지지 않음, 지속 15초﻿", stage: 2, img: "images/卫戍协议_道具_坚固维式重锤.png" },
+		{ id: 10, name: "가속의 빅토리아식 망치", effect: "◇ 공격력 +25%, 공격 속도 +30﻿<br>◆ 공격력 +40%, 공격 속도 +30﻿", stage: 2, img: "images/卫戍协议_道具_加速维式重锤.png" },
+		{ id: 11, name: "전율의 빅토리아식 망치", effect: "◇ 공격력 +25%, 지상 오퍼레이터가 장착했을 때 공격 시 8% 확률로 대상을 2초간 전율시킴﻿<br>◆ 공격력 +40%, 지상 오퍼레이터가 장착했을 때 공격 시 8% 확률로 대상을 2초간 전율시킴﻿", stage: 2, img: "images/卫戍协议_道具_战栗维式重锤.png" },
+		{ id: 12, name: "신속 전투 식량", effect: "◇ 배치 시 SP 3 획득, 같은 맹약의 다른 오퍼레이터가 있을 시 한 명마다 추가로 SP 3 획득﻿<br>◆ 배치 시 SP 6 획득, 같은 맹약의 다른 오퍼레이터가 있을 시 한 명마다 추가로 SP 6 획득﻿", stage: 2, img: "images/卫戍协议_道具_迅捷作战粮.png" },
+		{ id: 13, name: "제한 가속기", effect: "◇ 공격 또는 치료할 때마다 이번 전투에서 공격 속도 +1 (최대 60스택)﻿<br>◆ 공격 또는 치료할 때마다 이번 전투에서 공격 속도 +2 (최대 60스택)﻿", stage: 2, img: "images/卫戍协议_道具_有限加速器.png" },
+		{ id: 14, name: "레이저 발사기", effect: "◇ 공격 시 대상의 마법 저항 25% 무시﻿<br>◆ 공격 시 대상의 마법 저항 40% 무시﻿", stage: 2, img: "images/卫戍协议_道具_激光发射器.png" },
+		{ id: 15, name: "소음 발생기", effect: "◇ 더 쉽게 공격받음﻿<br>◆ 더 쉽게 공격받음, 체력 +30%﻿", stage: 2, img: "images/卫戍协议_道具_蜂鸣器.png" },
+		{ id: 16, name: "라테라노 클립", effect: "◇ 탄약류 스킬의 마지막 한 발 발사 시 40% 확률로 탄약을 40% 충전﻿<br>◆ 탄약류 스킬의 마지막 한 발 발사 시 70% 확률로 탄약을 40% 충전﻿", stage: 3, img: "images/卫戍协议_道具_拉特兰桥夹.png" },
+		{ id: 17, name: "정확한 조준경", effect: "◇ 자신으로부터 3칸 이상 떨어진 대상을 공격할 때 피해량 25% 증가﻿<br>◆ 자신으로부터 3칸 이상 떨어진 대상을 공격할 때 피해량 40% 증가﻿", stage: 3, img: "images/卫戍协议_道具_精准狙击镜.png" },
+		{ id: 18, name: "급습 섬광탄", effect: "◇ 배치 후 8초동안 공격 시 대상을 2초간 기절시킴﻿<br>◆ 배치 후 12초동안 공격 시 대상을 2초간 기절시킴﻿", stage: 3, img: "images/卫戍协议_道具_突袭手雷.png" },
+		{ id: 19, name: "사르곤 농축 차", effect: "◇ SP 자연 회복 속도 +0.15/초﻿<br>◆ SP 자연 회복 속도 +0.25/초﻿", stage: 3, img: "images/卫戍协议_道具_萨尔贡浓茶.png" },
+		{ id: 20, name: "위장복", effect: "◇ 배치 후 25초동안 위장 효과 획득﻿<br>◆ 배치 후 50초동안 위장 효과 획득﻿", stage: 3, img: "images/卫戍协议_道具_伪装服.png" },
+		{ id: 21, name: "진압 방패", effect: "◇ 받는 피해 40% 감소﻿<br>◆ 적 저지 시 자신이 저지하지 않은 유닛으로부터 받는 피해 70% 감소﻿", stage: 3, img: "images/卫戍协议_道具_防暴盾.png" },
+	  { id: 22, name: "최루 가스", effect: "◇ 공격 시 3% 확률로 대상 마비﻿<br>◆ 공격 시 5% 확률로 대상 마비﻿", stage: 4, img: "images/卫戍协议_道具_催泪瓦斯.png" },
+		{ id: 23, name: "쉐라그의 만년빙", effect: "◇ 공격 시 18% 확률로 1초간 냉기 부여﻿<br>◆ 공격 시 30% 확률로 1초간 냉기 부여﻿", stage: 4, img: "images/卫戍协议_道具_谢拉格不融冰.png" },
+		{ id: 24, name: "잠자는 후예", effect: "◇ 목표를 1개 공격할 때마다 최대 체력의 2% 회복﻿<br>◆ 목표를 1개 공격할 때마다 최대 체력의 4% 회복﻿", stage: 4, img: "images/卫戍协议_道具_休眠子裔.png" },
+		{ id: 25, name: "행운의 동전", effect: "◇ 장착 시 소멸, 1~6원 획득﻿<br>◆ 장착 시 소멸, 2~12원 획득﻿", stage: 4, img: "images/卫戍协议_道具_幸运硬币.png" },
+		{ id: 26, name: "농축 스멜링솔트", effect: "◇ 체력 80% 이상일 때 기절, 빙결 등 효과 면역﻿<br>◆ 체력 50% 이상일 때 기절, 빙결 등 효과 면역﻿", stage: 4, img: "images/卫戍协议_道具_浓缩嗅盐.png" },
+		{ id: 27, name: "보호막 드론", effect: "◇ 치료 시 10% 확률로 보호막 1겹 제공 (최대 1겹)﻿<br>◆ 치료 시 15% 확률로 보호막 1겹 제공 (최대 1겹)﻿", stage: 4, img: "images/卫戍协议_道具_护盾无人机.png" },
+		{ id: 28, name: "듀얼 모드 기계팔", effect: "◇ 공격력 +10%, 물리 또는 마법 피해를 입힐 시 대상의 방어력과 마법 저항에 따라 약점으로 전환﻿<br>◆ 공격력 +20%, 물리 또는 마법 피해를 입힐 시 대상의 방어력과 마법 저항에 따라 약점으로 전환﻿", stage: 4, img: "images/卫戍协议_道具_双模机械臂.png" },
+		{ id: 29, name: "M3 견갑", effect: "◇ 전투 도중 쓰러지면 바로 부활 (한 전투 당한번 발동)﻿<br>◆ 전투 도중 쓰러지면 바로 부활 (한 전투 당 두 번 발동)﻿", stage: 4, img: "images/卫戍协议_道具_M3茧甲.png" },
+		{ id: 30, name: "의태 물질", effect: "장착 시 소멸, 장착자가 2명 있을 시 즉시 1명 더 추가로 획득, 아닐 경우 같은 맹약의 무작위 오퍼레이터 1명 획득﻿", stage: 5, img: "images/卫戍协议_道具_拟态物质.png" },
+		{ id: 31, name: "박사 홀로그램", effect: "◇ 아무나 장착 가능, 다음 턴 시작 시 이 장비는 소멸하며 장착자를 정예화 상태로 만듬﻿<br>◆ 아무나 장착 가능, 장착 즉시 이 장비는 소멸하며 장착자를 정예화 상태로 만듬﻿", stage: 5, img: "images/卫戍协议_道具_博士投影.png" },
+		{ id: 32, name: "호출 모듈", effect: "장착 시 소멸, 상점을 즉시 특수한 물건으로 새로고침, 특수 상점은 장착자와 같은 맹약의 오퍼레이터만 출현﻿", stage: 5, img: "images/卫戍协议_道具_寻呼模块.png" },
+		{ id: 33, name: "신호기", effect: "장착 시 장착자와 이 장비는 소멸하고, 자동으로 전장 내 인원 수가 가장 많은 맹약의 오퍼레이터 1명 선택, <br>다음 준비 기간 시작 시 같은 등급의 동일 오퍼레이터 전송 <span style='color: gray;'><br>조건에 맞는 대상이 없을 시 해당 오퍼레이터 반환 <br>임시 모집 오퍼레이터 사용 불가﻿</span>", stage: 5, img: "images/卫戍协议_道具_信标.png" },
+		{ id: 34, name: "총기사의 위세", effect: "공격력 +35%(+60%), 장착자가 [라테라노]﻿인 경우<br>해당 오퍼레이터가 공격 시 35% 확률로 공격 범위 내 추가 적 한 명에게 총탄을 발사해 공격력 150%의 물리 피해<span style='color: gray;'>﻿<br>라테라노 클립 과 같이 장착할 시 총탄의 피해량 공격력 300%로 상승﻿﻿</span>", stage: 6, img: "images/卫戍协议_道具_铳骑之威.png" },
+		{ id: 35, name: "천사의 옛 솥", effect: "체력 +45%(+70%), 장착자가 [염국]﻿인 경우<br>이번 턴 오퍼레이터를 1명 얻을 때마다 전투 시작 시 공격 속도 +25 (최대 3스택)<span style='color: gray;'>﻿<br>염국 단도 와 같이 장착할 시 1명마다 2원 획득 (최대 3스택)</span>﻿", stage: 6, img: "images/卫戍协议_道具_天师古鼎.png" },
+		{ id: 36, name: "해구 실험체", effect: "받는 피해-180(-300), 장착자가 [에기르]인 경우<br>[에기르] 맹약 효과로 잡아먹는 범위가 주변 4칸으로 확장, [에기르] 또한 그 만큼 스택을 얻음<span style='color: gray;'><br>에기르 닻 과 같이 장착할 시 주변 4칸의 오퍼레이터를 잡아먹으면 그 만큼의 체력을 추가로 얻음﻿</span>", stage: 6, img: "images/卫戍协议_道具_海沟实验体.png" },
+		{ id: 37, name: "증기 심장", effect: "공격 속도 +35(+60), 장착자가 [빅토리아]인 경우 현재 전장에 있는 모든 '빅토리아식 망치'의 효과를 획득<br><span style='color: gray;'>빅토리아식 망치 계열 도구와 같이 장착할 시 해당 망치의 효과가 두 배로 강화됨﻿</span>", stage: 6, img: "images/卫戍协议_道具_蒸汽之心.png" },
+		{ id: 38, name: "쉐라간드의 눈물", effect: "마법 저항 +30(+50), 장착자가 [쉐라그]﻿인 경우<br>해당 오퍼레이터가 적을 쓰러트리면 주변 일정범위 내 기타 적들이 2초간 빙결<br><span style='color: gray;'>쉐라그의 만년빙 과 같이 장착할 시 적을 쓰러트리면 주변 일정범위 내 추가로 2초간 빙결﻿</span>﻿", stage: 6, img: "images/卫戍协议_道具_耶拉冈德之泪.png" },
+		{ id: 39, name: "황금 모래 나침반", effect: "초기 SP +25(+40), 장착자가 [사르곤]﻿인 경우<br>해당 오퍼레이터 스킬 종료 시 즉시 SP 30 회복<br><span style='color: gray;'>사르곤 농축 차 와 같이 장착할 시 스킬을 발동할 때마다 모든 [사르곤] 오퍼레이터가 SP 3(5) 회복﻿</span>", stage: 6, img: "images/卫戍协议_道具_黄沙罗盘.png" },
+		{ id: 40, name: "인사부 문서", effect: "장착 시 소멸, 배치 가능 인원 수 1 증가﻿", stage: 6, img: "images/卫戍协议_道具_人事部文档.png" },
+		{ id: 41, name: "돌연변이 세포", effect: "전투 종료 시 장착자가 한 단계 높은 무작위 오퍼레이터로 변함﻿", stage: 6, img: "images/卫戍协议_道具_突变细胞.png" },
+		{ id: 42, name: "변형 구성체", effect: "장착자가 추가 맹약 획득 (같이 장착한 다른 도구에 따름)", stage: 6, img: "images/卫戍协议_道具_变形同构体.png" },
+		{ id: 43, name: "상업 포장법", effect: "◇ 오퍼레이터를 8명(6명) 팔 때마다 장착자와 동일한 오퍼레이터 획득﻿", stage: 6, img: "images/卫戍协议_道具_商业包装方案.png" },
+	]
+};
+
+// 탭 전환
+document.querySelectorAll(".tab").forEach(tab => {
+  tab.addEventListener("click", evt => {
+    const tabName = evt.target.dataset.tab;
+    document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+    evt.target.classList.add("active");
+    document.querySelectorAll("main > section").forEach(sec => {
+      sec.classList.toggle("active", sec.id === tabName);
+    });
+  });
+});
+
+// 영능 탭 렌더링
+function renderAbilities() {
+  const container = document.getElementById("ability-list");
+  container.innerHTML = "";
+  data.abilities.forEach(a => {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `<img src="${a.img}" alt="${a.name}"><h3>${a.name}</h3><p>${a.effect}</p><p>체력: ${a.hp}</p>`;
+    container.appendChild(card);
+  });
+}
+
+// 맹약 탭 렌더링
+function renderOaths() {
+  const coreContainer = document.getElementById("core-oath-list");
+  const supportContainer = document.getElementById("support-oath-list");
+
+  coreContainer.innerHTML = "";
+  supportContainer.innerHTML = "";
+
+  data.oaths.forEach(oath => {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `<img src="${oath.img}" alt="${oath.name}"><h3>${oath.name}</h3><p>${oath.effect}</p><p>필요 인원: ${oath.needCount}</p>`;
+    if(oath.type === "core") {
+      coreContainer.appendChild(card);
+    } else if(oath.type === "support") {
+      supportContainer.appendChild(card);
+    }
+  });
+}
+
+// 오퍼레이터 필터용 토글 버튼 생성
+function createToggleButtons(containerId, items) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = "";
+  items.forEach(item => {
+    const btn = document.createElement("button");
+    btn.textContent = item;
+    btn.dataset.value = item;
+    // 기본 비활성화 상태이므로 active 클래스 추가 안 함
+    btn.addEventListener("click", () => {
+      btn.classList.toggle("active");
+      renderOperators();
+    });
+    container.appendChild(btn);
+  });
+}
+
+function renderOperators() {
+  const container = document.getElementById("operator-list");
+  container.innerHTML = "";
+
+  const coreFilters = Array.from(document.querySelectorAll("#core-oath-filters button.active")).map(b => b.dataset.value);
+  const supportFilters = Array.from(document.querySelectorAll("#support-oath-filters button.active")).map(b => b.dataset.value);
+  const stageFilters = Array.from(document.querySelectorAll("#stage-filters button.active")).map(b => Number(b.dataset.value));
+  const traitFilters = Array.from(document.querySelectorAll("#trait-filters button.active")).map(b => b.dataset.value);
+
+  // 필터링 조건
+	const filtered = data.operators.filter(op => {
+	  // 오퍼의 core / support 맹약 이름 분리
+	  const opCoreOaths = op.oaths.filter(name =>
+		data.oaths.some(oath => oath.name === name && oath.type === "core")
+	  );
+	  const opSupportOaths = op.oaths.filter(name =>
+		data.oaths.some(oath => oath.name === name && oath.type === "support")
+	  );
+	  
+	  // coreFilters, supportFilters 각각 체크
+	  if (coreFilters.length > 0 && !coreFilters.some(cf => opCoreOaths.includes(cf))) return false;
+	  if (supportFilters.length > 0 && !supportFilters.some(sf => opSupportOaths.includes(sf))) return false;
+
+	  // 단계, 특성 필터는 기존대로
+	  if (stageFilters.length > 0 && !stageFilters.includes(op.stage)) return false;
+	  if (traitFilters.length > 0 && !traitFilters.includes(op.trait)) return false;
+	  return true;
+	});
+
+  // 단계별 그룹핑
+  const stagesMap = new Map();
+  filtered.forEach(op => {
+    if (!stagesMap.has(op.stage)) {
+      stagesMap.set(op.stage, []);
+    }
+    stagesMap.get(op.stage).push(op);
+  });
+
+  // 단계 오름차순 정렬된 단계 리스트
+  Array.from(stagesMap.keys()).sort((a, b) => a - b).forEach(stage => {
+    const stageSection = document.createElement("div");
+    const stageTitle = document.createElement("h3");
+    stageTitle.textContent = `단계 ${stage}`;
+    stageSection.appendChild(stageTitle);
+
+    const stageContainer = document.createElement("div");
+	stageContainer.className = "card-list";
+
+    stagesMap.get(stage).forEach(op => {
+      const card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML = `<img src="${op.img}" alt="${op.name}"><h3>${op.name}</h3><p>${op.oaths.join(", ")}</p><p>${op.traitDescription}</p>`;
+      stageContainer.appendChild(card);
+    });
+
+    stageSection.appendChild(stageContainer);
+    container.appendChild(stageSection);
+  });
+}
+
+
+
+function selectAllFilters() {
+  document.querySelectorAll("#operator .filter-toggle-group button").forEach(btn => btn.classList.add("active"));
+  renderOperators();
+}
+function deselectAllFilters() {
+  document.querySelectorAll("#operator .filter-toggle-group button").forEach(btn => btn.classList.remove("active"));
+  renderOperators();
+}
+
+// 도구 탭 렌더링
+	const comboPreview = document.getElementById("combo-preview");
+	const comboLargeContainer = document.getElementById("combo-large-container");
+	const comboLargeImg = document.getElementById("combo-large-img");
+
+	comboPreview.addEventListener("click", () => {
+	  if (comboLargeContainer.style.display === "block") {
+		comboLargeContainer.style.display = "none";
+		comboLargeImg.src = "";
+	  } else {
+		comboLargeImg.src = "images/조합법2.png";  // 실제 이미지 경로
+		comboLargeContainer.style.display = "block";
+	  }
+	});
+
+function renderTools() {
+  const container = document.getElementById("tools-list");
+  container.innerHTML = "";
+
+  // 단계별 그룹핑
+  const stagesMap = new Map();
+  data.tools.forEach(tool => {
+    if (!stagesMap.has(tool.stage)) {
+      stagesMap.set(tool.stage, []);
+    }
+    stagesMap.get(tool.stage).push(tool);
+  });
+
+  // 단계 오름차순 정렬 및 렌더
+  Array.from(stagesMap.keys()).sort((a, b) => a - b).forEach(stage => {
+    const stageSection = document.createElement("div");
+    const stageTitle = document.createElement("h3");
+    stageTitle.textContent = `단계 ${stage}`;
+    stageSection.appendChild(stageTitle);
+
+    const stageContainer = document.createElement("div");
+    stageContainer.className = "card-list";  // 그리드 스타일 적용
+
+    stagesMap.get(stage).forEach(tool => {
+      const card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML = `
+        <img src="${tool.img}" alt="${tool.name}">
+        <h3>${tool.name}</h3>
+        <p>${tool.effect}</p>`;
+      stageContainer.appendChild(card);
+    });
+
+    stageSection.appendChild(stageContainer);
+    container.appendChild(stageSection);
+  });
+}
+
+
+// 시뮬 탭 기능
+const simState = {
+  operators: [],
+  banned: []
+};
+
+document.getElementById("sim-clear").addEventListener("click", () => {
+  simState.operators = [];
+  simState.banned = [];
+  updateSimInfo();
+  renderSim();
+});
+
+function renderSim() {
+  const simOaths = document.getElementById("sim-oaths");
+  const simOpsContainer = document.getElementById("sim-operators");
+  simOaths.innerHTML = "";
+  simOpsContainer.innerHTML = "";
+
+  // 모든 맹약 이름 집합
+  const oathsSet = new Set(data.oaths.map(o => o.name));
+  oathsSet.forEach(oathName => {
+    const div = document.createElement("div");
+    div.style.marginBottom = "10px";
+    div.innerHTML = `<h4>${oathName}</h4>`;
+
+    // 현재 맹약에 포함된 오퍼만 표시
+    data.operators.filter(op => op.oaths.includes(oathName)).forEach(op => {
+      const img = document.createElement("img");
+      img.src = op.img;
+      img.alt = op.name;
+      img.title = op.name;
+      img.style.marginRight = "6px";
+
+      const isBanned = simState.banned.includes(op.id);
+      const isSelected = simState.operators.includes(op.id);
+      img.style.border = isBanned ? "2px solid red" : isSelected ? "2px solid green" : "2px solid transparent";
+      img.style.opacity = isBanned ? 0.4 : 1;
+      img.className = (isBanned ? "banned " : "") + (isSelected ? "selected" : "");
+
+      img.addEventListener("click", () => {
+        if (isBanned) return;
+        const idx = simState.operators.indexOf(op.id);
+        if (idx === -1) {
+          if (simState.operators.length >= 10) { alert("최대 10명까지 선택 가능합니다."); return; }
+          simState.operators.push(op.id);
+        } else {
+          simState.operators.splice(idx, 1);
+        }
+        updateSimInfo();
+        renderSim();
+      });
+
+      img.addEventListener("contextmenu", e => {
+        e.preventDefault();
+        if (simState.banned.includes(op.id)) {
+          simState.banned = simState.banned.filter(id => id !== op.id);
+        } else {
+          simState.banned.push(op.id);
+          if (simState.operators.includes(op.id)) {
+            simState.operators = simState.operators.filter(id => id !== op.id);
+          }
+        }
+        updateSimInfo();
+        renderSim();
+      });
+
+      div.appendChild(img);
+    });
+
+    simOaths.appendChild(div);
+  });
+
+  // 선택된 오퍼레이터 이미지 표시 (중복 제거)
+  [...new Set(simState.operators)].forEach(opId => {
+    const op = data.operators.find(o => o.id === opId);
+    if (!op) return;
+    const img = document.createElement("img");
+    img.src = op.img;
+    img.alt = op.name;
+    img.title = op.name;
+    img.className = "selected";
+    img.addEventListener("click", () => {
+      simState.operators = simState.operators.filter(id => id !== opId);
+      updateSimInfo();
+      renderSim();
+    });
+    simOpsContainer.appendChild(img);
+  });
+}
+
+
+// 맹약별 상태 표시(renderSim 내 또는 updateSimInfo 내 호출)
+function renderSimOathStatus() {
+  const container = document.getElementById("sim-oath-status");
+  container.innerHTML = "";
+
+  const activeOathsMap = new Map();
+
+  // 선택된 오퍼 기준 각 맹약별 활성화 수 계산
+  simState.operators.forEach(opId => {
+    const op = data.operators.find(o => o.id === opId);
+    if (!op) return;
+    op.oaths.forEach(oathName => {
+      activeOathsMap.set(oathName, (activeOathsMap.get(oathName) || 0) + 1);
+    });
+  });
+
+  // 표시할 맹약 목록 (활성된 맹약만)
+  const displayedOaths = data.oaths.filter(oath => activeOathsMap.has(oath.name));
+
+  // 충족 여부 순 -> 이름 순 정렬
+  displayedOaths.sort((a, b) => {
+    const aCount = activeOathsMap.get(a.name);
+    const bCount = activeOathsMap.get(b.name);
+    const aActive = aCount >= a.needCount ? 0 : 1;
+    const bActive = bCount >= b.needCount ? 0 : 1;
+    if (aActive !== bActive) return aActive - bActive;
+    return a.name.localeCompare(b.name);
+  });
+
+  // 맹약별 카드 가로 배치
+  container.style.display = "flex";
+  container.style.gap = "15px";
+  container.style.flexWrap = "wrap";
+
+  displayedOaths.forEach(oath => {
+    const count = activeOathsMap.get(oath.name);
+    const isActive = count >= oath.needCount;
+
+    const card = document.createElement("div");
+    card.style.display = "flex";
+    card.style.flexDirection = "column";
+    card.style.alignItems = "center";
+    card.style.fontSize = "14px";
+    card.style.color = isActive ? "blue" : "#555";
+    if (isActive) card.style.fontWeight = "bold";
+
+    const img = document.createElement("img");
+    img.src = oath.img;
+    img.alt = oath.name;
+    img.title = oath.name;
+    img.style.width = "40px";
+    img.style.height = "40px";
+    img.style.marginBottom = "4px";
+
+    const span = document.createElement("span");
+    span.textContent = `${count} / ${oath.needCount}`;
+
+    card.appendChild(img);
+    card.appendChild(span);
+    container.appendChild(card);
+  });
+}
+
+
+
+function updateSimInfo() {
+  document.getElementById("sim-selected-count").textContent = simState.operators.length;
+  // 숫자 표시 제거: 활성화된 맹약 개수 표시 삭제
+
+  // 맹약별 활성화 상태만 표시
+  renderSimOathStatus();
+}
+
+// 탭 초기 렌더 + 필터 초기화
+renderAbilities();
+renderOaths();
+
+const coreOaths = data.oaths
+  .filter(o => o.type === "core")
+  .map(o => o.name);
+
+const supportOaths = data.oaths
+  .filter(o => o.type === "support")
+  .map(o => o.name);
+const stages = [...new Set(data.operators.map(o=>o.stage))].sort();
+const traits = [...new Set(data.operators.map(o => o.trait))].filter(t => t !== "");
+
+createToggleButtons("core-oath-filters", coreOaths);
+createToggleButtons("support-oath-filters", supportOaths);
+createToggleButtons("stage-filters", stages.map(String), "stage");
+createToggleButtons("trait-filters", traits, "trait");
+
+document.getElementById("deselect-all").addEventListener("click", deselectAllFilters);
+
+renderOperators();
+renderTools();
+renderSim();
+</script>
+</body>
+</html>
