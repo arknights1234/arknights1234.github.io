@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>위수협의 #3</title>
+<style>
+  body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f5f5f5; }
+  header { background: #222; color: white; padding: 10px 20px; position: sticky; top: 0; z-index: 100; }
+  .tabs { display: flex; gap: 10px; }
+  .tab {
+    padding: 10px 20px;
+    cursor: pointer;
+    user-select: none;
+    background: #444;
+    border-radius: 4px 4px 0 0;
+  }
+  .tab.active { background: #fff; color: #222; font-weight: bold; }
+  main { background: #fff; padding: 20px; min-height: 70vh; }
+  section { display: none; }
+  section.active { display: block; }
+
+  /* 공통 리스트 스타일 */
+  .card-list { display: grid; grid-template-columns: repeat(auto-fill,minmax(220px,1fr)); gap: 15px; }
+  .card {
+    background: #eee;
+    border-radius: 6px;
+    padding: 15px;
+    box-shadow: 1px 1px 6px rgba(0,0,0,0.1);
+  }
+  .card img { border-radius: 4px; }
+  .card h3 { margin: 0 0 8px; }
+  .tooltip {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    border-bottom: 1px dotted black;
+  }
+  .tooltip .tooltiptext {
+    visibility: hidden; width: 150px; background: #222; color: #fff; text-align: center;
+    border-radius: 6px; padding: 5px 8px; position: absolute; z-index: 1;
+    bottom: 120%; left: 50%; margin-left: -75px;
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .tooltip:hover .tooltiptext {
+    visibility: visible; opacity: 1;
+  }
+  /* 오퍼레이터 토글버튼 */
+  .filter-toggle-group {
+    display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;
+  }
+  .filter-toggle-group button {
+    padding: 6px 10px;
+    border: none;
+    background: #888;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  .filter-toggle-group button.active {
+    background: #337ab7;
+  }
+  .filter-controls {
+    margin-bottom: 12px;
+  }
+  .filter-controls button {
+    padding: 5px 10px;
+    margin-right: 10px;
+    cursor: pointer;
+  }
+  /* 시뮬레이션 영역 */
+  #simulator {
+    margin-top: 20px;
+    border-top: 2px solid #ccc;
+    padding-top: 10px;
+  }
+  #simulator img {
+    width: 50px; height: 50px; margin: 4px; border-radius: 5px; cursor: pointer;
+    border: 2px solid transparent;
+  }
+  #simulator img.banned {
+    opacity: 0.4;
+    border-color: red;
+  }
+  #simulator img.selected {
+    border-color: green;
+  }
+  #simulator-info {
+    margin-top: 10px;
+  }
+  button#sim-clear {
+    margin-top: 10px; padding: 6px 14px; cursor: pointer;
+  }
+#ability-list .card img {
+  width: 50px;   /* 고정 크기 지정 */
+  height: 50px;  /* 필요 시 비율 맞춰 */
+  object-fit: contain;  /* 이미지 비율 유지 */
+  border-radius: 4px;
+}
+#operator-list-container,
+#tools-list-container {
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)) !important;
+  gap: 15px !important;
+}
+.stage-section .card-list {
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)) !important;
+}
+
+/* 오퍼/도구탭 img 고정 크기 */
+#operator-list-container .card img,
+#tools-list-container .card img,
+.stage-section .card-list .card img {
+  width: 80px !important;
+  height: 80px !important;
+  object-fit: contain !important;
+  border-radius: 4px !important;
+}
+
+#core-oath-list .card img,
+#support-oath-list .card img {
+  width: 80px !important;
+  height: 80px !important;
+  object-fit: contain !important;
+  border-radius: 4px !important;
+}
+
+/* 시뮬탭 이미지 크기 */
+#sim-operators img,
+#sim-oaths img {
+  width: 60px;
+  height: 60px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+	body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f5f5f5; }
+</style>
+</head>
+<body>
+<header>
+  <div style="display:flex;align-items:flex-end;justify-content:space-between;">
+    <nav class="tabs">
+      <div class="tab active" data-tab="ability">영능</div>
+      <div class="tab" data-tab="oath">맹약</div>
+      <div class="tab" data-tab="operator">오퍼레이터</div>
+      <div class="tab" data-tab="tools">도구</div>
+      <div class="tab" data-tab="sim">시뮬</div>
+    </nav>
+
+    <!-- 시즌 선택 버튼 -->
+    <a href="index.html"
+       style="
+         margin-left:16px;
+         padding:14px 28px;
+         background:#444;
+         color:#fff;
+         border-radius:4px 4px 0 0;
+         text-decoration:none;
+         font-size:16px;
+         line-height:1;
+       ">
+      시즌 선택
+    </a>
+  </div>
+</header>
+
+<main>
+  <!-- 영능 탭 -->
+  <section id="ability" class="active">
+    <div class="card-list" id="ability-list"></div>
+  </section>
+
+  <!-- 맹약 탭 -->
+	<section id="oath">
+	  <h2>핵심 맹약</h2>
+	  <div id="core-oath-list" class="card-list"></div>
+
+	  <h2>보조 맹약</h2>
+	  <div id="support-oath-list" class="card-list"></div>
+	</section>
+
+  <!-- 오퍼레이터 탭 -->
+  <section id="operator">
+    <div class="filter-controls">
+      <div>핵심 맹약:</div>
+      <div class="filter-toggle-group" id="core-oath-filters"></div>
+      <div>보조 맹약:</div>
+      <div class="filter-toggle-group" id="support-oath-filters"></div>
+      <div>단계:</div>
+      <div class="filter-toggle-group" id="stage-filters"></div>
+      <div>특성:</div>
+      <div class="filter-toggle-group" id="trait-filters"></div>
+      <button id="deselect-all">전체 해제</button>
+    <div id="operator-list"></div>
+  </section>
+
+  <!-- 도구 탭 -->
+	<section id="tools" style="position: relative;">
+	  <!-- 고정 조합법 이미지 (작은 이미지) -->
+	  <div id="combo-preview" style="margin-bottom: 15px; text-align:center; position: relative; display: inline-block; cursor: pointer;">
+		<img src="images/조합법.png" alt="조합법 이미지" 
+			 style="max-width:300px; max-height:300px; border:1px solid #ccc; border-radius:6px;" />
+	  </div>
+
+	  <!-- 큰 이미지 표시용 숨김 영역 -->
+	  <div id="combo-large-container">
+		  <img id="combo-large-img" src="" alt="" style="width:80%; height:auto;" />
+		</div>
+
+	  <!-- 도구 카드 목록 -->
+	  <h2>도구 목록</h2>
+	  <div id="tools-list"></div>
+	</section>
+
+<!-- 오퍼레이터 섹션 -->
+<section id="operator">
+  <!-- 기존 필터들 -->
+  <div id="operator-list-container"> 
+    <div class="stage-section" data-stage="1"><h3>1단계</h3><div class="card-list" id="operator-stage-1"></div></div>
+    <div class="stage-section" data-stage="2"><h3>2단계</h3><div class="card-list" id="operator-stage-2"></div></div>
+    <div class="stage-section" data-stage="3"><h3>3단계</h3><div class="card-list" id="operator-stage-3"></div></div>
+    <div class="stage-section" data-stage="4"><h3>4단계</h3><div class="card-list" id="operator-stage-4"></div></div>
+    <div class="stage-section" data-stage="5"><h3>5단계</h3><div class="card-list" id="operator-stage-5"></div></div>
+    <div class="stage-section" data-stage="6"><h3>6단계</h3><div class="card-list" id="operator-stage-6"></div></div>
+  </div>
+</section>
+
+  <!-- 도구 섹션 -->
+<section id="tools">
+  <div id="tools-list-container">
+    <div class="stage-section" data-stage="1"><h3>1단계</h3><div class="card-list" id="tools-stage-1"></div></div>
+    <div class="stage-section" data-stage="2"><h3>2단계</h3><div class="card-list" id="tools-stage-2"></div></div>
+    <div class="stage-section" data-stage="3"><h3>3단계</h3><div class="card-list" id="tools-stage-3"></div></div>
+    <div class="stage-section" data-stage="4"><h3>4단계</h3><div class="card-list" id="tools-stage-4"></div></div>
+    <div class="stage-section" data-stage="5"><h3>5단계</h3><div class="card-list" id="tools-stage-5"></div></div>
+    <div class="stage-section" data-stage="6"><h3>6단계</h3><div class="card-list" id="tools-stage-6"></div></div>
+  </div>
+</section>
+
+  <!-- 시뮬 탭 -->
+  <section id="sim">
+	  <div id="sim-help-text" style="margin-bottom: 12px; font-size: 14px; color: #666;">
+		좌클릭으로 오퍼 추가, 우클릭으로 오퍼 밴
+	  </div>
+	  <!-- 선택된 오퍼 목록을 상단으로 옮김 -->
+	  <div id="sim-selected-operators" style="margin-bottom: 15px;">
+		<h3>선택된 오퍼레이터</h3>
+		<div id="sim-operators"></div>
+	  </div>
+		<div id="simulator-info">
+		<div>선택된 오퍼레이터 수: <span id="sim-selected-count">0</span> / 8</div>
+		<button id="sim-clear">초기화</button>
+	  </div>
+	  <div id="sim-oath-status" style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 10px;"></div>
+	  <div id="sim-oaths"></div>
+
+	  
+	</section>
+</main>
+<script type="module" src="js/season3/main.js"></script>
+</body>
+</html>
