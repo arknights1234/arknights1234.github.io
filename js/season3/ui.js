@@ -193,7 +193,7 @@ export function initComboPreview() {
     if (comboLargeContainer.style.display === 'block') {
       comboLargeContainer.style.display = 'none';
     } else {
-      comboLargeImg.src = 'images/조합법2.png';  // 큰 이미지 경로
+      comboLargeImg.src = 'images/조합법3.png';  // 큰 이미지 경로
       comboLargeContainer.style.display = 'block';
     }
   });
