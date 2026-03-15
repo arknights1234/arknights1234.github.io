@@ -61,7 +61,7 @@ export const data = {
 	  { id: 20, name: "협력", effect: "모든 오퍼레이터의 받는 물리 및 마법 피해 20% 감소, [협력] 오퍼레이터는 120%의 피해를 입히고, 정예 [협력] 오퍼레이터는 140%의 피해를 입힘", needCount: 2, type: "support", img: "images/협력.png" },
 	  { id: 21, name: "비전", effect: "[비전] 오퍼레이터가 마법 피해를 줄 때 목표가 받는 마법 피해 상승, 3초 지속<br><3명 이상> [비전] 오퍼레이터가 체력 50% 이하의 적에게 주는 피해 증가", needCount: 2, type: "support", img: "images/비전.png" },
 	  { id: 22, name: "단독", effect: "<1명 일 때> [단독] 오퍼레이터의 공격력과 체력 60% 증가, 초기sp +15(전장에 [단독] 오퍼레이터 2명 이상일 경우 효과가 적용되지 않음)", needCount: 1, type: "support", img: "images/단독.png" },
-	  { id: 22, name: "특기", effect: "<정예 오퍼레이터 2명> 정예 오퍼레이터의 공격력 +30%<br><정예 오퍼레이터 5명> 정예 오퍼레이터 sp소모량 -30%(모든 정예 오퍼레이터가 본 맹약을 활성화 가능)", needCount: 2, type: "support", img: "images/특기.png" },
+	  { id: 23, name: "특기", effect: "<정예 오퍼레이터 2명> 정예 오퍼레이터의 공격력 +30%<br><정예 오퍼레이터 5명> 정예 오퍼레이터 sp소모량 -30%(모든 정예 오퍼레이터가 본 맹약을 활성화 가능)", needCount: 2, type: "support", img: "images/특기.png" },
 	],
   "operators": [
 	// 1단계

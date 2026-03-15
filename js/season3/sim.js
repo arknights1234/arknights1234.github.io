@@ -17,7 +17,7 @@ export function renderSim(app) {
   simOpsContainer.innerHTML = '';
 
   // Oath별 operator 표시
-  const oathsSet = new Set(app.data.oaths.map(o => o.name));
+  const oathsSet = new Set(app.data.oaths.filter(o => o.name !== '특기').map(o => o.name));
   oathsSet.forEach(oathName => {
     const div = document.createElement('div');
     div.style.marginBottom = '10px';

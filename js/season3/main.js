@@ -14,7 +14,7 @@ function init() {
 
   // 필터 버튼 완전 생성
   const coreOaths = app.data.oaths.filter(o => o.type === 'core').map(o => o.name);
-  const supportOaths = app.data.oaths.filter(o => o.type === 'support').map(o => o.name);
+  const supportOaths = app.data.oaths.filter(o => o.type === 'support' && o.name !== '특기').map(o => o.name);
   const stages = [1,2,3,4,5,6].map(s => s.toString());
   const traits = [...new Set(app.data.operators.map(op => op.trait))];
 
