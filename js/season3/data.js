@@ -174,7 +174,7 @@ export const data = {
 	{ id: 71, name: "호시구마", oaths: ["염국"], stage: 4, trait: "획득 시", traitDescription: "<획득 시> 자신 소속 맹약 스택 +8(16) (맹약 활성화될 필요 없음)", img: "images/头像_星熊.png" },
 	//{ id: 61, name: "폴리닉", oaths: ["조력","협력"], stage: 4, trait: "판매 시", traitDescription: "<판매 시> 다음 준비 기간에 추가로 2원(4원) 획득﻿", img: "images/头像_亚叶.png" },
 	{ id: 72, name: "머드락", oaths: ["단독"], stage: 4, trait: "판매 시", traitDescription: "<판매 시> 다음 준비 기간에 추가로 2원(4원) 획득", img: "images/头像_泥岩.png" },
-	{ id: 73, name: "플레임테일", oaths: ["카시미어"], stage: 4, trait: "획득 시", traitDescription: "<획득 시> 와일드메인, 애쉬락을 1(2)번 획득하며, 낮은 확률로 파투스를 획득", img: "images/头像_灰毫.png" },
+	{ id: 73, name: "플레임테일", oaths: ["카시미어"], stage: 4, trait: "획득 시", traitDescription: "<획득 시> 와일드메인 또는 애쉬락을 1(2)번 획득하며, 낮은 확률로 파투스를 획득", img: "images/头像_灰毫.png" },
 	{ id: 74, name: "파투스", oaths: ["카시미어","정밀"], stage: 4, trait: "기타", traitDescription: "전투 시작 시, 같은 줄의 가장 오른쪽에 있는 오퍼레이터에게 배치 시, 활성화된 [카시미어] [정밀] 스택을 4(8)만큼 증가 특성을 부여. 전투 당 최대 24(48)", img: "images/头像_焰尾.png" },
 
 	// 5단계
