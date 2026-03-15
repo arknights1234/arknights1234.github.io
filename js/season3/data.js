@@ -202,7 +202,7 @@ export const data = {
 	{ id: 90, name: "프틸롭시스", oaths: ["조력","영민"], stage: 5, trait: "준비 기간 돌입 시", traitDescription: "자신 앞 한 칸 오퍼레이터가 '<준비 시간 돌입 시>' 특성을 가진 경우 해당 오퍼레이터의 특성 복사﻿", img: "images/头像_白面鸮.png" },
 	{ id: 91, name: "마운틴", oaths: ["투자자"], stage: 5, trait: "준비 기간 종료 시", traitDescription: "<준비 기간 종료 시> 이번 턴 구매한 오퍼레이터 한 명마다 활성화된 [투자자] 스택 +1(2)", img: "images/头像_山.png" },
 	{ id: 92, name: "가비알 디 인빈서블", oaths: ["사르곤"], stage: 5, trait: "기타", traitDescription: "전투 중 스킬 발동 시 활성화된 [사르곤] +8(16)", img: "images/头像_百炼嘉维尔.png" },
-	{ id: 93, name: "무에나", oaths: ["카시미어"], stage: 5, trait: "기타", traitDescription: "[카시미어] 5스택마다 이 오퍼레이터는 배치 후 100초 동안 기본 공격력 +10(20), 기본 체력 +50(100)을 얻습니다.", img: "images/头像_百炼嘉维尔.png" },
+	{ id: 93, name: "무에나", oaths: ["카시미어"], stage: 5, trait: "기타", traitDescription: "[카시미어] 5스택마다 이 오퍼레이터는 배치 후 100초 동안 기본 공격력 +10(20), 기본 체력 +50(100)을 얻습니다.", img: "images/头像_玛恩纳.png" },
 	{ id: 94, name: "안젤리나", oaths: ["시라쿠사","기적"], stage: 5, trait: "준비 기간 종료 시", traitDescription: "<준비 기간 종료 시> 이번 라운드에서 새로고침 한 횟수마다 활성화 된 [시라쿠사] 스택 +4(8) 최대 12(24)", img: "images/头像_安洁莉娜.png" },
 	{ id: 95, name: "산탈라", oaths: ["선견"], stage: 5, trait: "준비 기간 돌입 시", traitDescription: "<준비 기간 돌입 시> <준비 기간 종료 시> 활성화된 선견 +4(8)", img: "images/头像_寒檀.png" },
 
