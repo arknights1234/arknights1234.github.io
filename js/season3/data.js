@@ -193,7 +193,7 @@ export const data = {
 	{ id: 83, name: "시빌라이트 에테르나", oaths: ["기적","협력"], stage: 5, trait: "기타", traitDescription: "자기 앞 한 칸의 오퍼레이터가 특성을 통해 맹약 스택 획득 시 획득하는 스택을 +1(+2)", img: "images/头像_魔王.png" },
 	{ id: 84, name: "스즈란", oaths: ["시라쿠사","협력"], stage: 5, trait: "준비 기간 돌입 시", traitDescription: "<준비 기간 돌입 시> 자기 앞 한 칸(2칸 안)의 다른 오퍼레이터의 '<획득 시>' 효과를 발동시킴", img: "images/头像_铃兰.png" },
 	{ id: 85, name: "사리아", oaths: ["견고","단독"], stage: 5, trait: "준비 기간 종료 시", traitDescription: "자신 앞 한 칸 오퍼레이터가 '<준비 시간 종료 시>' 특성을 가진 경우 해당 오퍼레이터의 특성 복사", img: "images/头像_塞雷娅.png" },
-	{ id: 86, name: "시", oaths: ["염국","비전"], stage: 5, trait: "준비 기간 종료 시", traitDescription: "<준비 기간 종료 시> 이번 준비 기간동안 얻은 오퍼레이터의 수만큼 활성화된 [염국] [비전] 스택 +2(4)", img: "images/头像_塞雷娅.png" },
+	{ id: 86, name: "시", oaths: ["염국","비전"], stage: 5, trait: "준비 기간 종료 시", traitDescription: "<준비 기간 종료 시> 이번 준비 기간동안 얻은 오퍼레이터의 수만큼 활성화된 [염국] [비전] 스택 +2(4)", img: "images/头像_夕.png" },
 	//{ id: 73, name: "린", oaths: ["염국","영민"], stage: 5, trait: "준비 기간 종료 시", traitDescription: "<준비 기간 종료 시> 이번 준비 기간동안 얻은 오퍼레이터의 수만큼 활성화된 [염국] [영민함] 스택 +1(2)", img: "images/头像_林.png" },
 	{ id: 87, name: "스펙터 디 언체인드", oaths: ["에기르","불굴"], stage: 5, trait: "기타", traitDescription: "자신이 쓰러지거나 분신으로 교체할 때마다 활성화된 [에기르] [불굴] 스택 +4(8)", img: "images/头像_归溟幽灵鲨.png" },
 	//{ id: 75, name: "실버애쉬", oaths: ["쉐라그","투자자","기적"], stage: 5, trait: "기타", traitDescription: "공격 범위 내 적이 빙결 시 25%(50%) 확률로 활성화된 [쉐라그] 스택 +1", img: "images/头像_银灰.png" },
