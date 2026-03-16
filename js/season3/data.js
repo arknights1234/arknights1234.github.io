@@ -110,7 +110,7 @@ export const data = {
 	{ id: 29, name: "카제마루", oaths: ["기적","불굴"], stage: 2, trait: "기타", traitDescription: "두 명만 있어도 정예화 가능", img: "images/头像_风丸.png" },
 	{ id: 30, name: "그라벨", oaths: ["카시미어","불굴"], stage: 2, trait: "기타", traitDescription: "배치 시 활성화 된 [카시미어] 스택 +1(2), 쓰러질 시 활성화 된 불굴 스택 +2(4)", img: "images/头像_砾.png" },
 	//{ id: 27, name: "틴맨", oaths: ["신속","영민"], stage: 2, trait: "준비 기간 돌입 시", traitDescription: "<준비 기간 돌입 시> 자신의 활성화된 맹약 스택 +2(4)﻿", img: "images/头像_锡人.png" },
-	{ id: 31, name: "티피", oaths: ["신속","영민"], stage: 2, trait: "준비 기간 돌입 시", traitDescription: "<준비 시간 돌입 시> 자신의 활성화된 맹약 스택 +2(4)", img: "images/头像_赫默.png" },
+	{ id: 31, name: "티피", oaths: ["신속","영민"], stage: 2, trait: "준비 기간 돌입 시", traitDescription: "<준비 시간 돌입 시> 자신의 활성화된 맹약 스택 +2(4)", img: "images/头像_蒂比.png" },
 	{ id: 32, name: "퍼퓨머", oaths: ["조력"], stage: 2, trait: "준비 기간 종료 시", traitDescription: "<준비 기간 종료 시>현재 활성화된 맹약 중 스택 수가 가장 많은 맹약의 스택 수+2(4)<br>해당 오퍼레이터가 준비 구역에 있는 동안에도 효과 발동", img: "images/头像_调香师.png" },
 	//{ id: 29, name: "아렌", oaths: ["라테라노"], stage: 2, trait: "기타", traitDescription: "드론 적 공격 시 공격력 150%(200%)로 증가﻿", img: "images/头像_芳汀.png" },
 	{ id: 33, name: "악코드", oaths: ["비전","조력"], stage: 2, trait: "획득 시", traitDescription: "<획득 시> 자신 소속 맹약 스택 +4(8) (맹약 활성화될 필요 없음)", img: "images/头像_协律.png" },
