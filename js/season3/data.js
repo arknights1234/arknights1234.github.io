@@ -180,7 +180,7 @@ export const data = {
 	// 5단계
 	{ id: 75, name: "이그제큐터 디 엑스 포에데레", oaths: ["라테라노","선견"], stage: 5, trait: "기타", traitDescription: "자신이 탄약을 7발 소모할 때마다 활성화된 [라테라노] 스택 +7(14), [선견] 스택 +3(6), 전투 당 최대 7회", img: "images/头像_圣约送葬人.png" },
 	//{ id: 63, name: "패신저", oaths: ["사르곤","정확"], stage: 5, trait: "기타", traitDescription: "스킬 발동 시 같은 가로줄에 오퍼레이터가 3명 있다면 활성화된 [사르곤]﻿ [정확] 스택 +2(4)", img: "images/头像_异客.png" },
-	{ id: 76, name: "티티", oaths: ["사르곤","정확"], stage: 5, trait: "기타", traitDescription: "사거리 내의 적 또는 오퍼레이터가 잠들거나 기절할 때마다 활성화된 [사르곤] [정밀] 스택 수를 1(2)만큼 증가. 전투 당 최대 24(48).", img: "images/头像_异客.png" },
+	{ id: 76, name: "티티", oaths: ["사르곤","정확"], stage: 5, trait: "기타", traitDescription: "사거리 내의 적 또는 오퍼레이터가 잠들거나 기절할 때마다 활성화된 [사르곤] [정밀] 스택 수를 1(2)만큼 증가. 전투 당 최대 24(48).", img: "images/头像_缇缇.png" },
 	{ id: 77, name: "블레이즈 디 이그나이팅 스파크", oaths: ["염국","빅토리아"], stage: 5, trait: "획득 시", traitDescription: "<획득 시> [염국] [빅토리아] 스택 +5(10) (맹약 활성화될 필요 없음)", img: "images/头像_烛煌.png" },
 	{ id: 78, name: "와파린", oaths: ["기적"], stage: 5, trait: "기타", traitDescription: "자기 앞 한 칸의 오퍼레이터가 스킬 발동 시 활성화된 소속 맹약의 스택 +1(+2) 특성을 추가로 획득 <br>(매 전투마다 최대 12(24)스택까지 쌓을 수 있음)", img: "images/头像_华法琳.png" },
 	//{ id: 65, name: "좌락", oaths: ["염국"], stage: 5, trait: "기타", traitDescription: "스킬 발동 시 [염국] 스택 +2(4) (전투 당 최대 10(20))", img: "images/头像_左乐.png" },
