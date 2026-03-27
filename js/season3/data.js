@@ -231,7 +231,7 @@ export const data = {
 	{ id: 98, name: "위", oaths: ["염국","견고"], stage: 6, trait: "준비 기간 돌입 시", traitDescription: "<준비 기간 돌입 시> 같은 가로줄에 오퍼레이터가 3명 있다면 현재 인원 수가 가장 많은 맹약의 무작위 오퍼레이터 한 명 획득 (정예화 시 가로줄 인원수 조건 사라짐)﻿", img: "images/头像_余.png" },
 	{ id: 99, name: "스카디 더 커럽팅 하트", oaths: ["에기르"], stage: 6, trait: "기타", traitDescription: "[에기르] 10스택마다 본 오퍼레이터는 매 초마다 체력 50(100) 회복, SP 자연 회복 속도 +0.15/초(+0.3/초)", img: "images/头像_浊心斯卡蒂.png" },
 	//{ id: 84, name: "나란투야", oaths: ["사르곤"], stage: 6, trait: "기타", traitDescription: "[사르곤] 8스택마다 본 오퍼레이터의 공격력 +1%(+2%)", img: "images/头像_娜仁图亚.png" },
-	{ id: 100, name: "패신저", oaths: ["사르곤","정확","단독"], stage: 6, trait: "기타", traitDescription: "[쉐라그] 및 [신속] 3스택마다 본 오퍼레이터의 공격력 +2%(4%)", img: "images/头像_异客.png" },
+	{ id: 100, name: "패신저", oaths: ["사르곤","신속","정확"], stage: 6, trait: "기타", traitDescription: "[사르곤] [신속] [정확] 3스택마다 본 오퍼레이터의 공격력 +2%(4%)", img: "images/头像_异客.png" },
 	{ id: 101, name: "페페", oaths: ["사르곤","불굴"], stage: 6, trait: "준비 기간 돌입 시", traitDescription: "<준비 기간 돌입 시> 행운의 동전 또는 사르곤 농축 차 1개 획득 (2회 반복) 일정 확률로 황금 모래 나침반 발견 가능", img: "images/头像_佩佩.png" },
 	{ id: 102, name: "비나 빅토리아", oaths: ["빅토리아","기적"], stage: 6, trait: "준비 기간 종료 시", traitDescription: "<준비 기간 종료 시> 전장 내 서로 다른 등급의 [빅토리아] 또는 [기적] 오퍼레이터 한명마다 활성화된 [빅토리아] 스택 +3(6), [기적] 스택 +2(4)", img: "images/头像_维娜·维多利亚.png" },
 	//{ id: 87, name: "골든글로우", oaths: ["빅토리아"], stage: 6, trait: "기타", traitDescription: "[빅토리아] 3스택마다 본 오퍼레이터의 공격 속도 +1(2)", img: "images/头像_澄闪.png" },
