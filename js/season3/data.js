@@ -39,7 +39,7 @@ export const data = {
 	  { id: 37, name: "터치", effect: "모든 플레이어 필드에 <예비 인원 - 지원> 1명이 등장. <br>전투 시작 시, 필드에 2명 이상의 정예 오퍼레이터가 있으면 Touch 로 교체", hp: 28, img: "images/영능터치.png" },
 	  { id: 38, name: "스즈란", effect: "매 라운드 시작 시, 전장에 있는 오퍼레이터 1명의 ‘획득 시 발동’ 효과를 1회 발동", hp: 20, img: "images/영능스즈란.png" },
 	  { id: 39, name: "제시카", effect: "4, 7, 10, 13라운드 휴식기에 진입할 때 <호출 모듈> 1개를 획득", hp: 22, img: "images/영능제시카.png" },
-	  { id: 40, name: "뮤엘시스", effect: "초기에 강화 된 <의태 물질> 획득", hp: 22, img: "images/영능뮤엘시스.png" },
+	  { id: 40, name: "뮤엘시스", effect: "초기에 강화 된 <박사 홀로그램> 획득", hp: 22, img: "images/영능뮤엘시스.png" },
 	  { id: 41, name: "팽", effect: "8, 10, 12, 14라운드에 <신호기> 1개를 획득", hp: 22, img: "images/영능팽.png" },
 	],
 	"oaths": [
