@@ -105,7 +105,7 @@ export const data = {
 	{ id: 20, name: "사일런스", oaths: ["선견"], stage: 2, trait: "준비 기간 돌입 시", traitDescription: "<준비 시간 돌입 시> 자신의 활성화된 맹약 스택 +2(4)", img: "images/头像_赫默.png" },
 	//{ id: 21, name: "클리프하트", oaths: ["쉐라그", "불굴"], stage: 2, trait: "획득 시", traitDescription: "<획득 시> 자신 소속 맹약 스택 +3(6) (맹약 활성화될 필요 없음)", img: "images/头像_崖心.png" },
 	
-	{ id: 22, name: "그레인버즈", oaths: ["염국"], stage: 2, trait: "준비 기간 종료 시", traitDescription: "<준비 시간 종료 시> 이번 라운드 획득한 오퍼레이터 1명당 활성화된 [염국] 스택 +1(2)", img: "images/头像_小满.png" },
+	{ id: 22, name: "그레인버즈", oaths: ["염국","영민"], stage: 2, trait: "준비 기간 종료 시", traitDescription: "<준비 시간 종료 시> 이번 라운드 획득한 오퍼레이터 1명당 활성화된 [염국] 스택 +1(2)", img: "images/头像_小满.png" },
 	{ id: 23, name: "해럴드", oaths: ["빅토리아","쉐라그"], stage: 2, trait: "기타", traitDescription: "공격력 및 체력 +20%(40%), 핵심 맹약 3스택마다 추가로 +1% (2%)", img: "images/头像_哈洛德.png" },
 	{ id: 24, name: "파피루스", oaths: ["사르곤"], stage: 2, trait: "기타", traitDescription: "처음으로 스킬 발동 시 활성화된 사르곤 스택 +5(10)", img: "images/头像_莎草.png" },
 	{ id: 25, name: "스펙터", oaths: ["에기르"], stage: 2, trait: "기타", traitDescription: "전투 중 처음으로 쓰러질 시 활성화된 에기르 스택 +3(6)", img: "images/头像_幽灵鲨.png" },
