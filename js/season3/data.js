@@ -201,7 +201,7 @@ export const data = {
 	{ id: 79, name: "울피아누스", oaths: ["에기르"], stage: 5, trait: "기타", traitDescription: "[에기르] 2스택마다 본 오퍼레이터의 공격력 +1%(+2%)", img: "images/头像_乌尔比安.png" },
 	{ id: 80, name: "엔텔레키아", oaths: ["영민","불굴"], stage: 5, trait: "기타", traitDescription: "핵심 맹약 3스택마다 본 오퍼레이터의 공격력과 생명력 +1%(+2%)", img: "images/头像_隐德来希.png" },
 	
-	{ id: 81, name: "수르트", oaths: ["비전","급습"], stage: 5, trait: "기타", traitDescription: "<배치 시> 이미 활성화된 [돌격]스택 +8 전투당 최대 50(100)", img: "images/头像_史尔特尔.png" },
+	{ id: 81, name: "수르트", oaths: ["비전","급습"], stage: 5, trait: "기타", traitDescription: "<배치 시> 이미 활성화된 [급습]스택 +8 전투당 최대 50(100)", img: "images/头像_史尔特尔.png" },
 	//{ id: 69, name: "제시카 더 리버레이티드", oaths: ["빅토리아","투자자"], stage: 5, trait: "준비 기간 돌입 시", traitDescription: "<준비 기간 돌입 시> 무작위 장비 1개(2개) 획득", img: "images/头像_涤火杰西卡.png" },
 	{ id: 82, name: "혼", oaths: ["빅토리아"], stage: 5, trait: "준비 기간 종료 시", traitDescription: "<준비 기간 종료 시> 서로 다른 단계의 오퍼레이터 1명 당 현재 가장 높은 맹약 +2(4)", img: "images/头像_号角.png" },
 	
