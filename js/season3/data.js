@@ -113,7 +113,7 @@ export const data = {
 	{ id: 26, name: "버블", oaths: ["사르곤","견고"], stage: 2, trait: "기타", traitDescription: "[사르곤] 및 [견고] 3스택마다 본 오퍼레이터의 방어력 +1% (+2%)", img: "images/头像_泡泡.png" },
 	{ id: 27, name: "휴머스", oaths: ["급습"], stage: 2, trait: "기타", traitDescription: "전투 중 적을 1명 쓰러트릴 때마다 활성화된 급습 스택 +1(2)", img: "images/头像_休谟斯.png" },
 	{ id: 28, name: "락락", oaths: ["빅토리아","비전"], stage: 2, trait: "획득 시", traitDescription: "<획득 시> 무작위 락락의 커스텀 제품 1개(2개) 제작", img: "images/头像_洛洛.png" },
-	{ id: 29, name: "카제마루", oaths: ["기적","불굴"], stage: 2, trait: "기타", traitDescription: "두 명만 있어도 정예화 가능", img: "images/头像_风丸.png" },
+	{ id: 29, name: "카제마루", oaths: ["기적"], stage: 2, trait: "기타", traitDescription: "두 명만 있어도 정예화 가능", img: "images/头像_风丸.png" },
 	{ id: 30, name: "그라벨", oaths: ["카시미어","불굴"], stage: 2, trait: "기타", traitDescription: "배치 시 활성화 된 [카시미어] 스택 +1(2), <br>쓰러질 시 활성화 된 [불굴] 스택 +2(4)", img: "images/头像_砾.png" },
 	//{ id: 27, name: "틴맨", oaths: ["신속","영민"], stage: 2, trait: "준비 기간 돌입 시", traitDescription: "<준비 기간 돌입 시> 자신의 활성화된 맹약 스택 +2(4)﻿", img: "images/头像_锡人.png" },
 	{ id: 31, name: "티피", oaths: ["신속","영민"], stage: 2, trait: "준비 기간 돌입 시", traitDescription: "<준비 시간 돌입 시> 자신의 활성화된 맹약 스택 +2(4)", img: "images/头像_蒂比.png" },
