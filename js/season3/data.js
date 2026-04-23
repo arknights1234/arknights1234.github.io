@@ -127,7 +127,7 @@ export const data = {
 
 	  // 3단계
 	{ id: 37, name: "엑시아", oaths: ["라테라노","기적"], stage: 3, trait: "획득 시", traitDescription: "<획득 시> 다음 준비 기간에 추가로 1원 (2원) 획득", img: "images/头像_能天使.png" },
-	{ id: 38, name: "에이어스카르페", oaths: ["영민"], stage: 3, trait: "준비 기간 돌입 시", traitDescription: "<준비 기간 종료 시> 자신과 자신 뒤 오퍼레이터 한 명의 활성화된 맹약 스택 +3(6)", img: "images/头像_断崖.png" },
+	{ id: 38, name: "에이어스카르페", oaths: ["영민"], stage: 3, trait: "준비 기간 종료 시", traitDescription: "<준비 기간 종료 시> 자신과 자신 뒤 오퍼레이터 한 명의 활성화된 맹약 스택 +3(6)", img: "images/头像_断崖.png" },
 	//{ id: 31, name: "오로라", oaths: ["쉐라그"], stage: 3, trait: "기타", traitDescription: "공격 범위 내 적이 빙결 시 최대 체력의 1.5%(2.5%) 회복﻿", img: "images/头像_极光.png" },
 	//{ id: 32, name: "와이후", oaths: ["염국","불굴"], stage: 3, trait: "획득 시", traitDescription: "<획득 시> 현재 활성화된 맹약 중 스택 수가 가장 많은 맹약의 스택 수 +3(6)﻿", img: "images/头像_槐琥.png" },
 	{ id: 39, name: "스와이어", oaths: ["염국","선견"], stage: 3, trait: "획득 시", traitDescription: "<획득 시> 행운의 동전 1(2)개를 획득", img: "images/头像_诗怀雅.png" },
