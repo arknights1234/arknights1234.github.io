@@ -203,7 +203,7 @@
       { key: 'simulation', label: '시뮬레이션' }
     ];
 
-    const tierList = [1,2,3,4,5,6].map(n => ({ id: n, name: `${n}단계`, image: `images/stage${n}.png` }));
+    const tierList = [1,2,3,4,5,6].map(n => ({ id: n, name: `${n}티어`, image: `images/stage${n}.png` }));
     const tierMap = new Map(tierList.map(t => [String(t.id), t]));
 
     const oaths = (data?.oaths || []).map(o => ({
@@ -290,7 +290,7 @@
           <div class="operator-main">
             <div class="avatar" style="max-width:108px;">
               ${img(op.img,'',op.name)}
-              <span class="tier-badge">${img(tierImage(op.tier),'',`${op.tier}단계`)}</span>
+              <span class="tier-badge">${img(tierImage(op.tier),'',`${op.tier}티어`)}</span>
             </div>
             <div>
               <div class="name">${op.name}</div>
@@ -308,7 +308,7 @@
         <article class="gear-card">
           <div class="avatar" style="max-width:108px;">
             ${img(item.image,'',item.name)}
-            <span class="tier-badge">${img(tierImage(item.tier),'',`${item.tier}단계`)}</span>
+            <span class="tier-badge">${img(tierImage(item.tier),'',`${item.tier}티어`)}</span>
           </div>
           <div class="name" style="font-size:20px;">${item.name}</div>
           <div class="trait">${item.effectText}</div>
@@ -392,7 +392,7 @@
             </div>
           </div>
           <div>
-            <div class="filter-title">단계</div>
+            <div class="filter-title">티어</div>
             <div class="button-row">
               <button class="filter-chip ${state.operatorFilters.tier==='all'?'active':''}" data-filter="tier" data-value="all">전체</button>
               ${tierList.map(t => `<button class="filter-chip ${String(state.operatorFilters.tier)===String(t.id)?'active':''}" data-filter="tier" data-value="${t.id}">${img(t.image,'icon24',t.name)}</button>`).join('')}
@@ -484,7 +484,7 @@
             `).join('')}
           </div>
           <div>
-            <div class="filter-title">단계</div>
+            <div class="filter-title">티어</div>
             <div class="button-row">
               <button class="filter-chip ${state.gearTier==='all'?'active':''}" data-gear-tier="all">전체</button>
               ${tierList.map(t => `<button class="filter-chip ${String(state.gearTier)===String(t.id)?'active':''}" data-gear-tier="${t.id}">${img(t.image,'icon24',t.name)}</button>`).join('')}
@@ -528,7 +528,7 @@
             <button class="reset-btn" data-sim-reset>초기화</button>
           </div>
           <div class="selected-grid">
-            ${selectedOps.map(op => `<div class="select-card" title="${op.name}">${img(op.img,'',op.name)}<span class="tier-badge" style="width:28px;height:28px;border-radius:6px 6px 0 0;">${img(tierImage(op.tier),'',`${op.tier}단계`)}</span></div>`).join('')}
+            ${selectedOps.map(op => `<div class="select-card" title="${op.name}">${img(op.img,'',op.name)}<span class="tier-badge" style="width:28px;height:28px;border-radius:6px 6px 0 0;">${img(tierImage(op.tier),'',`${op.tier}티어`)}</span></div>`).join('')}
           </div>
           <div class="sim-synergy-grid">
             ${oaths.filter(s => (counts.get(s.key) || 0) > 0).map(s => {
@@ -553,7 +553,7 @@
           return `<section class="sim-group"><div class="tier-header">${img(s.img,'icon32',s.name)}<span>${s.name}</span></div><div class="sim-op-grid">${list.map(op => {
             const banned = isOperatorBanned(op);
             const selected = state.simSelected.includes(op.key);
-            return `<button class="sim-op ${selected?'selected':''} ${banned?'banned':''}" data-sim-op="${op.key}" ${banned?'disabled':''} title="${op.name}">${img(op.img,'',op.name)}<span class="tier-badge">${img(tierImage(op.tier),'',`${op.tier}단계`)}</span></button>`;
+            return `<button class="sim-op ${selected?'selected':''} ${banned?'banned':''}" data-sim-op="${op.key}" ${banned?'disabled':''} title="${op.name}">${img(op.img,'',op.name)}<span class="tier-badge">${img(tierImage(op.tier),'',`${op.tier}티어`)}</span></button>`;
           }).join('')}</div></section>`;
         }).join('')}`;
 
