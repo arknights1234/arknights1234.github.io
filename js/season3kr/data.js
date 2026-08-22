@@ -481,7 +481,7 @@ export const data = {
 	{ id: 9, name: "굼", oaths: ["고수"], stage: 1, class: "작전 능력", trait: "기타", traitDescription: "SP 자연 회복 속도 <span style='color: #3A9BDC;'>+0.15(0.3)/초</span>", img: "images/头像_古米.png" },
 	{ id: 10, name: "에스텔", oaths: ["사르곤"], stage: 1, class: "1회 중첩", trait: "획득 시", traitDescription: "<획득 시> 자신이 속한 맹약의 중첩 수 <span style='color: #3A9BDC;'>+2(4)</span> (맹약 활성화 불필요)", img: "images/头像_艾丝黛尔.png" },
 	{ id: 11, name: "포덴코", oaths: ["조력"], stage: 1, class: "지속 중첩", trait: "휴식 기간 종료 시", traitDescription: "<휴식 기간 종료 시> 이미 활성화되어 있으며 가장 많이 중첩된 맹약의 중첩 수 <span style='color: #3A9BDC;'>+1(2)</span>, 정비 구역에 있어도 효과 적용", img: "images/头像_波登可.png" },
-	{ id: 12, name: "그레이", oaths: ["기민"], stage: 1, class: "정비 능력", trait: "판매 시", traitDescription: "<휴식 기간 종료 시> 다음 휴식 기간에 자금 <span style='color: #3A9BDC;'>1(2)</span> 추가 획득", img: "images/头像_格雷伊.png" },
+	{ id: 12, name: "그레이", oaths: ["기민"], stage: 1, class: "정비 능력", trait: "판매 시", traitDescription: "<판매 시> 다음 휴식 기간에 자금 <span style='color: #3A9BDC;'>1(2)</span> 추가 획득", img: "images/头像_格雷伊.png" },
 	{ id: 13, name: "인디고", oaths: ["정밀", "아케인"], stage: 1, class: "1회 중첩", trait: "획득 시", traitDescription: "<획득 시> 자신이 속한 맹약의 중첩 수 <span style='color: #3A9BDC;'>+2(4)</span> (맹약 활성화 불필요)", img: "images/头像_深靛.png" },
 	{ id: 14, name: "우타게", oaths: ["기습"], stage: 1, class: "작전 능력", trait: "기타", traitDescription: "<전투 중> 입히는 대미지가 약점 대미지로 변경 (적의 방어력과 마법 저항에 따라 물리 또는 마법 대미지로 변경)", img: "images/头像_宴.png" },
 	{ id: 15, name: "와일드메인", oaths: ["카시미어", "신속"], stage: 1, class: "1회 중첩", trait: "획득 시", traitDescription: "<획득 시> 자신이 속한 맹약의 중첩 수 <span style='color: #3A9BDC;'>+2(4)</span> (맹약 활성화 불필요)", img: "images/头像_野鬃.png" },
