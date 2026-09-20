@@ -636,7 +636,7 @@ export const data = {
 		{ id: 29, name: "진압 방패", effect: "적을 저지하고 있을 때, 자신이 저지하고 있지 않은 적으로부터 받는 대미지 <span style=\"color: #3A9BDC;\">-40(70)%</span>", stage: 4, img: "images/卫戍协议_道具_防暴盾.png" },
 		{ id: 30, name: "잠자는 후예", effect: "목표를 1명 공격할 때마다 자신 최대 HP의 <span style=\"color: #3A9BDC;\">2(4)%</span> 회복", stage: 4, img: "images/卫戍协议_道具_休眠子裔.png" },
 		{ id: 31, name: "카시미어 스포츠 깃발", effect: "배치 후 <span style=\"color: #3A9BDC;\">15</span>초간 입히는 대미지가 <span style=\"color: #3A9BDC;\">160%</span>로 증가, 이후 점차 감소", stage: 4, img: "images/카시미어경기깃발.png" },
-		{ id: 32, name: "라테라노 클립", effect: "탄약류 스킬이 탄약 1발이 남을 경우, 50(60)% 확률로 탄약 40(60)% 회복 (배치할 때마다 최대 3회 발동)", stage: 3, img: "images/卫戍协议_道具_拉特兰桥夹.png" },
+		{ id: 32, name: "라테라노 클립", effect: "탄약류 스킬이 탄약 1발이 남을 경우, 50(60)% 확률로 탄약 40(60)% 회복 (배치할 때마다 최대 3회 발동)", stage: 4, img: "images/卫戍协议_道具_拉特兰桥夹.png" },
 		{ id: 33, name: "불타는 빅토리아 해머", effect: "공격력 <span style=\"color: #3A9BDC;\">+30(50)%</span>, 마법 대미지를 입히면 대미지의 <span style=\"color: #3A9BDC;\">10%</span>에 해당하는 소각 손상을 입힘", stage: 4, img: "images/卫戍协议_道具_灼燃维式重锤.png" },
 		{ id: 34, name: "농축 스멜링 솔트", effect: "HP가 70(40)% 초과 시 기절, 빙결 등의 상태 이상 면역", stage: 4, img: "images/卫戍协议_道具_浓缩嗅盐.png" },
 		{ id: 35, name: "실드 드론", effect: "치료 시 10(15)% 확률로 목표에게 실드 1회 부여 (최대 1회 중첩)", stage: 4, img: "images/卫戍协议_道具_护盾无人机.png" },
