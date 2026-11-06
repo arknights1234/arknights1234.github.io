@@ -38,7 +38,7 @@ export function renderSim(app) {
         const idx = app.simState.operators.indexOf(op.id);
         if (idx !== -1) {
           app.simState.operators.splice(idx, 1);
-        } else if (app.simState.operators.length < 10) {
+        } else if (app.simState.operators.length < 9) {
           app.simState.operators.push(op.id);
         }
         updateSimInfo(app);

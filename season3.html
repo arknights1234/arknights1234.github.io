@@ -134,6 +134,8 @@
 }
 	body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f5f5f5; }
 </style>
+<script src="js/theme.js"></script>
+<link rel="stylesheet" href="css/legacy.css">
 </head>
 <body>
 <header>
@@ -160,6 +162,7 @@
        ">
       시즌 선택
     </a>
+    <div data-theme-slot></div>
   </div>
 </header>
 
@@ -197,7 +200,7 @@
 	<section id="tools" style="position: relative;">
 	  <!-- 고정 조합법 이미지 (작은 이미지) -->
 	  <div id="combo-preview" style="margin-bottom: 15px; text-align:center; position: relative; display: inline-block; cursor: pointer;">
-		<img src="images/조합법.png" alt="조합법 이미지" 
+		<img src="images/조합법.webp" alt="조합법 이미지" 
 			 style="max-width:300px; max-height:300px; border:1px solid #ccc; border-radius:6px;" />
 	  </div>
 
@@ -247,7 +250,7 @@
 		<div id="sim-operators"></div>
 	  </div>
 		<div id="simulator-info">
-		<div>선택된 오퍼레이터 수: <span id="sim-selected-count">0</span> / 8</div>
+		<div>선택된 오퍼레이터 수: <span id="sim-selected-count">0</span> / 9</div>
 		<button id="sim-clear">초기화</button>
 	  </div>
 	  <div id="sim-oath-status" style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 10px;"></div>
