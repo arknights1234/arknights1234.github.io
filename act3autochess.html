@@ -1,0 +1,939 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>위수 협의: 규정</title>
+  <script src="js/theme.js"></script>
+  <style>
+    :root {
+      --bg: #050505;
+      --surface: #0f0f0f;
+      --surface-2: #171717;
+      --surface-3: #202020;
+      --topbar: rgba(5,5,5,0.94);
+      --border: rgba(255,255,255,0.12);
+      --border-strong: rgba(255,255,255,0.22);
+      --text: #f5f5f5;
+      --muted: #bbbbbb;
+      --faint: #7c7c7c;
+      --green: #2fe27b;
+      --red: #ff5967;
+      --on-bg: #ffffff;
+      --on-text: #000000;
+      --shadow: 0 12px 30px rgba(0,0,0,0.28);
+      --radius-sm: 12px;
+      --radius-md: 18px;
+      --space-1: 4px;
+      --space-2: 8px;
+      --space-3: 12px;
+      --space-4: 16px;
+      --space-5: 20px;
+      --space-6: 24px;
+      --space-8: 32px;
+      --header-h: 74px;
+      --side-w: 88px;
+      --avatar: 108px;
+      --font: system-ui, -apple-system, 'Segoe UI', 'Malgun Gothic', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+    }
+    :root[data-theme="light"] {
+      --bg: #f3f4f6;
+      --surface: #ffffff;
+      --surface-2: #f0f1f3;
+      --surface-3: #e5e7ea;
+      --topbar: rgba(243,244,246,0.94);
+      --border: rgba(0,0,0,0.12);
+      --border-strong: rgba(0,0,0,0.24);
+      --text: #15171a;
+      --muted: #4b5058;
+      --faint: #7a7f87;
+      --green: #0b8f48;
+      --red: #d92d3a;
+      --on-bg: #15171a;
+      --on-text: #ffffff;
+      --shadow: 0 6px 18px rgba(0,0,0,0.07);
+    }
+    * { box-sizing: border-box; }
+    body { margin:0; background:var(--bg); color:var(--text); font-family:var(--font); line-height:1.5; }
+    img { display:block; max-width:100%; }
+    button { font: inherit; color:inherit; cursor: pointer; }
+    a { color: inherit; }
+    [hidden] { display:none !important; }
+    .skip { position:absolute; left:-9999px; top:auto; }
+    .skip:focus { left:12px; top:12px; z-index:999; background:var(--on-bg); color:var(--on-text); padding:8px 12px; }
+
+    .topbar {
+      position: sticky; top:0; z-index:50; height:var(--header-h);
+      display:grid; grid-template-columns:var(--side-w) minmax(0,1fr) var(--side-w); align-items:center; gap:var(--space-4);
+      padding:var(--space-3) var(--space-4); background:var(--topbar); border-bottom:1px solid var(--border); backdrop-filter: blur(10px);
+    }
+    .back-btn, .theme-btn {
+      width:48px; height:48px; display:flex; align-items:center; justify-content:center;
+      border-radius:999px; text-decoration:none; background:var(--surface); border:1px solid var(--border-strong);
+    }
+    [data-theme-slot] { display:flex; justify-content:flex-end; }
+    .tabs { display:flex; justify-content:center; gap:var(--space-2); }
+    .tab-btn {
+      min-height:44px; padding:10px 16px; border-radius:999px; white-space:nowrap;
+      border:1px solid var(--border); background:var(--surface);
+    }
+    .tab-btn.active { background:var(--on-bg); color:var(--on-text); border-color:var(--on-bg); }
+
+    main { max-width:1280px; margin:0 auto; padding:var(--space-6) var(--space-4) var(--space-8); }
+    .panel { display:none; }
+    .panel.active { display:block; }
+    .section-title { font-size:24px; font-weight:800; margin:0 0 var(--space-4); }
+    .box {
+      background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-md);
+      box-shadow:var(--shadow); padding:var(--space-4); margin-bottom:var(--space-6);
+    }
+
+    .strategy-list, .cards-grid, .gear-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(min(360px, 100%), 1fr)); gap:var(--space-4); }
+    .strategy-card, .operator-card, .gear-card {
+      background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-md); box-shadow:var(--shadow); padding:var(--space-4);
+    }
+    .strategy-card { display:grid; grid-template-columns:64px minmax(0,1fr); gap:var(--space-4); align-items:start; }
+    .operator-card { display:flex; flex-direction:column; gap:var(--space-3); }
+    .operator-main, .gear-card { display:grid; grid-template-columns:var(--avatar) minmax(0,1fr); gap:var(--space-4); align-items:start; }
+    .thumb, .avatar {
+      width:100%; aspect-ratio:1/1; overflow:hidden; position:relative; border-radius:var(--radius-sm);
+      background:var(--surface-2); border:1px solid var(--border); display:flex; align-items:center; justify-content:center;
+    }
+    .thumb { max-width:72px; }
+    .thumb img, .avatar > img { width:100%; height:100%; object-fit:contain; }
+    .name { font-size:20px; font-weight:800; line-height:1.3; }
+    .sub, .muted { color:var(--muted); }
+    .statline, .button-row, .inline-tags { display:flex; flex-wrap:wrap; gap:var(--space-2); }
+    .statline { margin:var(--space-2) 0; }
+    .pill, .tag-with-icon, .filter-chip, .synergy-btn, .reset-btn, .recipe-btn {
+      display:inline-flex; align-items:center; gap:var(--space-2); min-height:40px; padding:6px 10px;
+      border:1px solid var(--border); background:var(--surface-2); border-radius:var(--radius-sm);
+    }
+    .reset-btn { min-height:36px; padding:4px 12px; }
+    .mini-pill { display:inline-flex; padding:2px 10px; border:1px solid var(--border); background:var(--surface-2); border-radius:999px; font-size:14px; }
+    .filter-chip.active, .synergy-btn.active, .recipe-btn.active { background:var(--on-bg); color:var(--on-text); border-color:var(--on-bg); }
+    .synergy-btn.banned { border-color:var(--red); color:var(--red); box-shadow: inset 0 0 0 1px var(--red); }
+    .synergy-btn.banned img { filter:grayscale(1); opacity:.6; }
+    .group-stack { display:grid; gap:var(--space-5); }
+    .group-title, .tier-header { display:flex; align-items:center; gap:10px; font-weight:800; }
+    .group-title { font-size:18px; margin-bottom:var(--space-2); }
+    .tier-header { font-size:18px; margin-bottom:var(--space-3); }
+    .tier-block, .sim-group { margin-bottom:var(--space-6); }
+    .filter-title { color:var(--muted); font-size:14px; margin-bottom:6px; }
+    .filter-body { display:grid; gap:var(--space-3); margin-top:var(--space-3); }
+    details > summary { cursor:pointer; font-weight:700; list-style-position:inside; }
+    .tier-badge { position:absolute; left:0; bottom:0; width:32px; height:32px; border-radius:0 8px 0 0; overflow:hidden; background:#000; border:1px solid rgba(255,255,255,0.26); }
+    .tier-badge img { width:100%; height:100%; object-fit:cover; }
+    .icon24, .icon28, .icon32 { object-fit:cover; border-radius:8px; border:1px solid var(--border); background:#26282b; flex:0 0 auto; }
+    .icon24 { width:26px; height:26px; }
+    .icon28 { width:30px; height:30px; }
+    .icon32 { width:36px; height:36px; }
+    .synergy-head { display:grid; grid-template-columns:120px minmax(0,1fr); gap:var(--space-4); margin-bottom:var(--space-4); }
+    .synergy-head .thumb { max-width:120px; }
+    .recipe-box { display:none; margin-top:var(--space-2); }
+    .recipe-box.active { display:block; }
+    .recipe-line { display:flex; align-items:center; gap:var(--space-2); overflow-x:auto; padding:6px 0; }
+    .recipe-inline-img { width:44px; height:44px; object-fit:cover; border-radius:6px; border:1px solid var(--border); background:#26282b; flex:0 0 auto; }
+    .recipe-btn-img { width:32px; height:32px; object-fit:cover; border-radius:4px; flex:0 0 auto; }
+    .empty { color:var(--faint); padding:12px 0; }
+
+    /* 시뮬레이션 */
+    .sim-topline { display:flex; justify-content:space-between; align-items:center; gap:var(--space-3); flex-wrap:wrap; margin-bottom:var(--space-3); }
+    .sim-topline .group-title { margin:0; }
+    .sim-status { position:sticky; top:calc(var(--header-h) + 8px); z-index:30; padding:var(--space-3); }
+    .sim-status .sim-topline { margin-bottom:var(--space-2); }
+    .sim-count.full { color:var(--red); }
+    .slot-grid { display:grid; grid-template-columns:repeat(9, minmax(0, 72px)); gap:var(--space-2); margin-bottom:var(--space-2); }
+    .slot, .slot-empty { position:relative; aspect-ratio:1/1; border-radius:var(--radius-sm); border:1px solid var(--border); background:var(--surface-2); }
+    .slot { cursor:pointer; }
+    .slot > img.portrait { width:100%; height:100%; object-fit:cover; border-radius:inherit; }
+    .slot-empty { border-style:dashed; }
+    .slot .tier-badge { width:30%; height:30%; }
+    .slot-x {
+      position:absolute; top:-5px; right:-5px; width:22px; height:22px; padding:0; display:flex; align-items:center; justify-content:center;
+      border-radius:50%; border:1px solid var(--border-strong); background:var(--surface-3); font-size:13px; line-height:1;
+    }
+    .slot-gear { position:absolute; right:2px; bottom:2px; width:34%; height:34%; border-radius:6px; border:1px solid var(--green); background:#26282b; object-fit:cover; }
+    .status-grid { display:flex; flex-wrap:wrap; gap:6px; max-height:92px; overflow-y:auto; }
+    .status-empty { color:var(--faint); font-size:14px; }
+    .status-chip { display:flex; align-items:center; gap:6px; padding:3px 8px 3px 4px; border:1px solid var(--border); border-radius:10px; color:var(--muted); background:var(--surface-2); font-size:14px; white-space:nowrap; }
+    .status-chip.active { color:var(--green); border-color:var(--green); }
+    .status-chip .num { font-weight:800; font-variant-numeric:tabular-nums; }
+    .status-chip .boost { font-size:12px; color:var(--green); }
+    .pips { display:inline-flex; gap:2px; }
+    .pips i { width:6px; height:6px; border-radius:50%; background:var(--surface-3); border:1px solid var(--border-strong); }
+    .pips i.on { background:var(--green); border-color:var(--green); }
+    .sim-filter { display:flex; flex-wrap:wrap; align-items:center; gap:var(--space-2); }
+    .search-input { flex:1 1 180px; min-width:0; min-height:40px; padding:6px 12px; border-radius:var(--radius-sm); border:1px solid var(--border); background:var(--surface-2); color:var(--text); font:inherit; }
+    .sim-op-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(74px, 1fr)); gap:10px; max-width:100%; }
+    .sim-cell { position:relative; }
+    .sim-op { display:block; width:100%; aspect-ratio:1/1; padding:0; position:relative; overflow:hidden; border-radius:14px; border:1px solid var(--border); background:var(--surface-2); }
+    .sim-op > img { width:100%; height:100%; object-fit:cover; }
+    .sim-op .tier-badge { width:24px; height:24px; }
+    .sim-cell.selected .sim-op { box-shadow: inset 0 0 0 3px var(--green); border-color:var(--green); }
+    .sim-cell.selected .sim-op > img { opacity:.72; }
+    .sim-cell.banned .sim-op { border-color:var(--red); cursor:not-allowed; }
+    .sim-cell.banned .sim-op > img { filter:grayscale(1); opacity:.35; }
+    .sim-cell.maxed:not(.selected) .sim-op { opacity:.45; cursor:not-allowed; }
+    .sim-info {
+      position:absolute; top:2px; right:2px; width:18px; height:18px; padding:0; display:flex; align-items:center; justify-content:center;
+      border-radius:50%; border:1px solid rgba(255,255,255,0.35); background:rgba(0,0,0,0.5); color:#fff; font-size:11px; font-weight:800; line-height:1;
+    }
+    .sim-info::after { content:''; position:absolute; inset:-6px; }
+
+    dialog.sheet {
+      width:min(520px, 100%); max-height:85vh; padding:var(--space-4); color:var(--text); background:var(--surface);
+      border:1px solid var(--border-strong); border-radius:var(--radius-md); overflow:auto;
+    }
+    dialog.sheet::backdrop { background:rgba(0,0,0,0.55); }
+    .sheet-head { display:grid; grid-template-columns:84px minmax(0,1fr) auto; gap:var(--space-3); align-items:start; margin-bottom:var(--space-3); }
+    .sheet-close { width:36px; height:36px; padding:0; border-radius:50%; border:1px solid var(--border); background:var(--surface-2); }
+    .sheet-section { margin-top:var(--space-4); }
+    .sheet-action { width:100%; min-height:44px; margin-top:var(--space-4); border-radius:var(--radius-sm); border:1px solid var(--on-bg); background:var(--on-bg); color:var(--on-text); font-weight:700; }
+    .sheet-action.remove { background:transparent; color:var(--red); border-color:var(--red); }
+    .sheet-action:disabled { opacity:.45; cursor:not-allowed; }
+    .gear-choice { display:flex; flex-wrap:wrap; gap:6px; }
+    .gear-choice button { display:inline-flex; align-items:center; gap:6px; padding:4px 8px; border-radius:10px; border:1px solid var(--border); background:var(--surface-2); font-size:14px; }
+    .gear-choice button.active { border-color:var(--green); color:var(--green); box-shadow:inset 0 0 0 1px var(--green); }
+    .gear-choice button:disabled { opacity:.4; cursor:not-allowed; }
+
+    @media (max-width: 900px) {
+      :root { --header-h: 60px; --side-w: 44px; --avatar: 72px; }
+      .topbar { gap:var(--space-2); padding:6px var(--space-2); }
+      .back-btn, .theme-btn { width:42px; height:42px; }
+      .tabs { justify-content:flex-start; overflow-x:auto; scrollbar-width:none; }
+      .tabs::-webkit-scrollbar { display:none; }
+      .tab-btn { min-height:38px; padding:6px 12px; }
+      main { padding:var(--space-3) var(--space-3) var(--space-6); }
+      .section-title { font-size:20px; margin-bottom:var(--space-3); }
+      .box { padding:var(--space-3); margin-bottom:var(--space-4); }
+      .strategy-card, .operator-card, .gear-card { padding:var(--space-3); }
+      .operator-main, .gear-card { gap:var(--space-3); }
+      .strategy-card { grid-template-columns:48px minmax(0,1fr); gap:var(--space-3); }
+      .strategy-list, .cards-grid, .gear-grid { gap:var(--space-3); }
+      .name { font-size:17px; }
+      .strategy-card .muted, .trait { font-size:14px; }
+      .tag-with-icon { min-height:32px; padding:2px 8px 2px 3px; font-size:14px; }
+      .synergy-head { grid-template-columns:64px minmax(0,1fr); }
+      .tier-badge { width:24px; height:24px; }
+      .pill, .filter-chip, .synergy-btn, .recipe-btn { min-height:36px; padding:3px 8px 3px 4px; font-size:14px; }
+      .sim-status { top:calc(var(--header-h) + 4px); padding:var(--space-2); }
+      .sim-status .sim-topline { margin-bottom:6px; }
+      .sim-status .group-title { font-size:15px; }
+      .slot-grid { gap:5px; margin-bottom:6px; }
+      .slot-x { width:18px; height:18px; top:-4px; right:-4px; font-size:11px; }
+      .status-grid { flex-wrap:nowrap; overflow-x:auto; max-height:none; padding-bottom:2px; scrollbar-width:thin; }
+      .status-chip { font-size:13px; flex:0 0 auto; }
+      .status-chip .icon24 { width:22px; height:22px; }
+      .sim-op-grid { grid-template-columns:repeat(auto-fill, minmax(60px, 1fr)); gap:7px; }
+      .sim-op .tier-badge { width:20px; height:20px; }
+      dialog.sheet { margin:auto auto 0; width:100%; max-width:100%; border-radius:var(--radius-md) var(--radius-md) 0 0; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#content">본문으로 건너뛰기</a>
+  <header class="topbar" aria-label="상단 고정 메뉴">
+    <a class="back-btn" href="index.html" aria-label="시즌 선택으로 돌아가기">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+    </a>
+    <nav class="tabs" aria-label="탭 메뉴"></nav>
+    <div data-theme-slot></div>
+  </header>
+  <main id="content">
+    <section class="panel" data-panel="strategy"></section>
+    <section class="panel" data-panel="synergy"></section>
+    <section class="panel" data-panel="operators"></section>
+    <section class="panel" data-panel="gear"></section>
+    <section class="panel" data-panel="simulation"></section>
+  </main>
+  <dialog class="sheet" id="op-sheet" aria-label="오퍼레이터 특질"></dialog>
+
+  <script type="module">
+    import { data } from '/js/act3autochess/data.js';
+
+    const STORE_KEY = 'ac-state:act3autochess';
+    const MAX_SELECT = 9;
+    // 변형 구조체(gear1) + 장비(gear2) = 맹약(oath). ID는 data.js 기준
+    const recipeLines = [
+      { gear1: 62, gear2: 20, oath: 1 }, // 염국 단검 = 염국
+      { gear1: 62, gear2: 11, oath: 2 }, // 사르곤 농차 = 사르곤
+      { gear1: 62, gear2: 1, oath: 3 }, // 빅토리아 해머 = 빅토리아
+      { gear1: 62, gear2: 42, oath: 4 }, // 쉐라그 만년빙 = 쉐라그
+      { gear1: 62, gear2: 23, oath: 5 }, // 에기르 칼날 = 에기르
+      { gear1: 62, gear2: 18, oath: 6 }, // 시라쿠사 정장 = 시라쿠사
+      { gear1: 62, gear2: 37, oath: 7 }, // 카시미어 스포츠 깃발 = 카시미어
+      { gear1: 62, gear2: 29, oath: 8 }, // 우르수스 호흡기 = 우르수스
+      { gear1: 62, gear2: 31, oath: 9 }, // 이베리아 뼈가시 칼 = 이베리아
+      { gear1: 62, gear2: 41, oath: 10 }, // 라이타니엔 작은 북 = 라이타니엔
+      { gear1: 62, gear2: 19, oath: 11 }, // 정밀 조준경 = 정밀
+      { gear1: 62, gear2: 21, oath: 12 }, // 신속 전투식량 = 신속
+      { gear1: 62, gear2: 17, oath: 13 }, // 기민 터빈 장갑 = 기민
+      { gear1: 62, gear2: 2, oath: 14 }, // 고수 방패 = 고수
+      { gear1: 62, gear2: 27, oath: 19 }, // 기습 수류탄 = 기습
+      { gear1: 62, gear2: 8, oath: 20 }, // 불굴의 사출기 = 불굴
+      { gear1: 62, gear2: 16, oath: 25 }, // 결집 구급상자 = 결집
+      { gear1: 62, gear2: 24, oath: 26 }, // 아케인 마법진 = 아케인
+    ];
+
+    const tabs = [
+      { key: 'strategy', label: '전략' },
+      { key: 'synergy', label: '맹약' },
+      { key: 'operators', label: '오퍼레이터' },
+      { key: 'gear', label: '장비' },
+      { key: 'simulation', label: '시뮬레이션' }
+    ];
+
+    const tierList = [1,2,3,4,5,6].map(n => ({ id: n, name: `${n}티어`, image: `images/stage${n}.webp` }));
+    const tierMap = new Map(tierList.map(t => [String(t.id), t]));
+
+    // 효과 문구의 "전장에 ... N명 배치"에서 추가 활성화 인원을 읽는다
+    function breakpointsOf(required, effect) {
+      const found = [...String(effect || '').matchAll(/전장에[^<>]*?(?:<span[^>]*>)?(\d+)(?:<\/span>)?\s*명?\s*배치/g)].map(m => Number(m[1]));
+      return [...new Set([required, ...found])].filter(n => n > 0).sort((a, b) => a - b);
+    }
+
+    const oaths = (data?.oaths || []).map(o => ({
+      ...o,
+      key: String(o.id),
+      type: o.type === 'core' ? 'core' : 'sub',
+      required: Number(o.needCount || 0),
+      description: o.effect || '',
+      noBan: Boolean(o.noBan),
+      breakpoints: breakpointsOf(Number(o.needCount || 0), o.effect)
+    }));
+    const oathNameMap = new Map(oaths.map(o => [o.name, o]));
+    const oathKeyMap = new Map(oaths.map(o => [o.key, o]));
+    const harmonyKey = oathNameMap.get('조화')?.key;
+
+    const operators = (data?.operators || []).map(op => ({
+      ...op,
+      key: String(op.id),
+      tier: Number(op.stage),
+      synergies: (op.oaths || []).map(name => oathNameMap.get(name)?.key).filter(Boolean),
+      class: op.class || '',
+      traitLabel: op.trait || '',
+      traitDescriptionText: op.traitDescription || ''
+    }));
+    const operatorMap = new Map(operators.map(op => [op.key, op]));
+
+    const abilities = (data?.abilities || []).map(a => ({
+      ...a,
+      key: String(a.id),
+      image: a.img,
+      content: String(a.effect || '').replaceAll('<표준 시뮬레이션>', '<br><br><span class="sub">표준 시뮬레이션</span> ')
+    }));
+
+    const tools = (data?.tools || []).map(t => ({
+      ...t,
+      key: String(t.id),
+      tier: Number(t.stage),
+      image: t.img,
+      effectText: t.effect || ''
+    }));
+    const toolMap = new Map(tools.map(t => [t.key, t]));
+
+    const recipeImage = "images/조합법.webp";
+    const hasClassField = operators.some(op => op.class);
+    const traitValues = [...new Set(operators.map(op => op.traitLabel).filter(Boolean))];
+    const classValues = [...new Set(operators.map(op => op.class).filter(Boolean))];
+    const isWide = () => window.innerWidth > 900;
+
+    const state = {
+      tab: 'strategy',
+      synergySelected: oaths[0]?.key || null,
+      operatorFilters: { core:'all', sub:'all', tier:'all', class:'all', trait:'all' },
+      gearTier: 'all',
+      recipeOpen: false,
+      simSelected: [],
+      simBanned: [],
+      simGear: {},
+      simTier: 'all',
+      simSearch: ''
+    };
+
+    // 새로고침해도 탭과 시뮬레이션 상태를 유지한다
+    function loadState() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORE_KEY) || '{}');
+        if (tabs.some(t => t.key === saved.tab)) state.tab = saved.tab;
+        state.simSelected = (saved.simSelected || []).filter(k => operatorMap.has(k)).slice(0, MAX_SELECT);
+        state.simBanned = (saved.simBanned || []).filter(k => oathKeyMap.has(k) && !oathKeyMap.get(k).noBan);
+        Object.entries(saved.simGear || {}).forEach(([opKey, oathKey]) => {
+          if (state.simSelected.includes(opKey) && oathKeyMap.has(oathKey)) state.simGear[opKey] = oathKey;
+        });
+      } catch (e) {}
+    }
+    function saveState() {
+      try {
+        localStorage.setItem(STORE_KEY, JSON.stringify({ tab: state.tab, simSelected: state.simSelected, simBanned: state.simBanned, simGear: state.simGear }));
+      } catch (e) {}
+    }
+
+    const $ = (sel, root=document) => root.querySelector(sel);
+    const $$ = (sel, root=document) => [...root.querySelectorAll(sel)];
+
+    const img = (src, cls='', alt='') => `<img src="${src}" class="${cls}" alt="${alt}" loading="lazy" decoding="async">`;
+    const imgEager = (src, cls='', alt='') => `<img src="${src}" class="${cls}" alt="${alt}" decoding="async">`;
+    const imgNow = (src, cls='', alt='') => `<img src="${src}" class="${cls}" alt="${alt}" decoding="sync">`;
+    const tierImage = tier => tierMap.get(String(tier))?.image || `images/stage${tier}.webp`;
+    const toNode = html => { const t = document.createElement('template'); t.innerHTML = html.trim(); return t.content.firstElementChild; };
+
+    function synergyTags(ids=[]) {
+      return ids.map(id => {
+        const s = oathKeyMap.get(String(id));
+        if (!s) return '';
+        return `<span class="tag-with-icon">${img(s.img,'icon24',s.name)}<span>${s.name}</span></span>`;
+      }).join('');
+    }
+
+    function strategyCard(s) {
+      return `
+        <article class="strategy-card">
+          <div class="thumb">${img(s.image,'',s.name)}</div>
+          <div>
+            <div class="name">${s.name}</div>
+            <div class="statline"><span class="mini-pill">HP ${s.hp ?? '-'}</span></div>
+            <div class="muted">${s.content}</div>
+          </div>
+        </article>`;
+    }
+
+    function operatorCard(op) {
+      return `
+        <article class="operator-card">
+          <div class="operator-main">
+            <div class="avatar">
+              ${img(op.img,'',op.name)}
+              <span class="tier-badge">${img(tierImage(op.tier),'',`${op.tier}티어`)}</span>
+            </div>
+            <div>
+              <div class="name">${op.name}</div>
+              <div class="sub">${op.class || '-'}</div>
+              <div style="margin-top:6px;"><span class="mini-pill">${op.traitLabel || '특질'}</span></div>
+              <div class="trait" style="margin-top:6px;">${op.traitDescriptionText || ''}</div>
+            </div>
+          </div>
+          <div class="inline-tags">${synergyTags(op.synergies)}</div>
+        </article>`;
+    }
+
+    function gearCard(item) {
+      return `
+        <article class="gear-card">
+          <div class="avatar">
+            ${img(item.image,'',item.name)}
+            <span class="tier-badge">${img(tierImage(item.tier),'',`${item.tier}티어`)}</span>
+          </div>
+          <div>
+            <div class="name">${item.name}</div>
+            <div class="trait" style="margin-top:6px;">${item.effectText}</div>
+          </div>
+        </article>`;
+    }
+
+    function renderTabs() {
+      const nav = $('.tabs');
+      nav.innerHTML = tabs.map(tab => `<button class="tab-btn" data-tab="${tab.key}">${tab.label}</button>`).join('');
+      nav.addEventListener('click', e => {
+        const btn = e.target.closest('[data-tab]');
+        if (btn) showTab(btn.dataset.tab, true);
+      });
+    }
+
+    function renderStrategy() {
+      const panel = $('[data-panel="strategy"]');
+      panel.innerHTML = `
+        <h1 class="section-title">전략</h1>
+        <div class="strategy-list">${abilities.map(strategyCard).join('') || '<div class="empty">전략 데이터가 없습니다.</div>'}</div>`;
+    }
+
+    function renderSynergy() {
+      const panel = $('[data-panel="synergy"]');
+      const core = oaths.filter(s => s.type === 'core');
+      const sub = oaths.filter(s => s.type === 'sub');
+      const btn = s => `<button class="synergy-btn" data-sel-synergy="${s.key}">${img(s.img,'icon28',s.name)}<span>${s.name}</span></button>`;
+      panel.innerHTML = `
+        <h2 class="section-title">맹약</h2>
+        <div class="group-stack">
+          <section>
+            <div class="group-title">핵심 맹약</div>
+            <div class="button-row">${core.map(btn).join('') || '<div class="empty">핵심 맹약 없음</div>'}</div>
+          </section>
+          <section>
+            <div class="group-title">부가 맹약</div>
+            <div class="button-row">${sub.map(btn).join('') || '<div class="empty">부가 맹약 없음</div>'}</div>
+          </section>
+          <section data-synergy-detail></section>
+        </div>`;
+      panel.addEventListener('click', e => {
+        const b = e.target.closest('[data-sel-synergy]');
+        if (!b) return;
+        state.synergySelected = b.dataset.selSynergy;
+        updateSynergy();
+      });
+      updateSynergy();
+    }
+
+    function updateSynergy() {
+      const panel = $('[data-panel="synergy"]');
+      const selected = oathKeyMap.get(String(state.synergySelected)) || oaths[0];
+      $$('[data-sel-synergy]', panel).forEach(b => b.classList.toggle('active', b.dataset.selSynergy === selected?.key));
+      const members = operators.filter(op => op.synergies.includes(selected?.key));
+      $('[data-synergy-detail]', panel).innerHTML = selected ? `
+        <div class="box">
+          <div class="synergy-head">
+            <div class="thumb">${img(selected.img,'',selected.name)}</div>
+            <div>
+              <div class="name">${selected.name}</div>
+              <div class="statline"><span class="mini-pill">활성화 필요 인원 ${selected.required}</span></div>
+              <div>${selected.description}</div>
+            </div>
+          </div>
+          <div class="cards-grid">${members.map(operatorCard).join('') || '<div class="empty">해당 맹약 오퍼레이터가 없습니다.</div>'}</div>
+        </div>` : '';
+    }
+
+    function renderOperators() {
+      const panel = $('[data-panel="operators"]');
+      const coreList = oaths.filter(s => s.type === 'core');
+      const subList = oaths.filter(s => s.type === 'sub');
+      const chip = (filter, value, body) => `<button class="filter-chip" data-filter="${filter}" data-value="${value}">${body}</button>`;
+      const row = (title, filter, chips) => `
+        <div>
+          <div class="filter-title">${title}</div>
+          <div class="button-row">${chip(filter, 'all', '전체')}${chips}</div>
+        </div>`;
+      panel.innerHTML = `
+        <h2 class="section-title">오퍼레이터</h2>
+        <details class="box" ${isWide() ? 'open' : ''}>
+          <summary>필터 <span class="muted" data-filter-count></span></summary>
+          <div class="filter-body">
+            ${row('핵심 맹약', 'core', coreList.map(s => chip('core', s.key, `${img(s.img,'icon24',s.name)}<span>${s.name}</span>`)).join(''))}
+            ${row('부가 맹약', 'sub', subList.map(s => chip('sub', s.key, `${img(s.img,'icon24',s.name)}<span>${s.name}</span>`)).join(''))}
+            ${row('티어', 'tier', tierList.map(t => chip('tier', t.id, img(t.image,'icon24',t.name))).join(''))}
+            ${hasClassField ? row('분류', 'class', classValues.map(c => chip('class', c, c)).join('')) : ''}
+            ${row('특질', 'trait', traitValues.map(t => chip('trait', t, t)).join(''))}
+            <div><button class="reset-btn" data-reset-operators>필터 초기화</button></div>
+          </div>
+        </details>
+        <div data-operator-results></div>`;
+      panel.addEventListener('click', e => {
+        const btn = e.target.closest('[data-filter]');
+        if (btn) {
+          const { filter, value } = btn.dataset;
+          state.operatorFilters[filter] = state.operatorFilters[filter] === value ? 'all' : value;
+          updateOperators();
+        } else if (e.target.closest('[data-reset-operators]')) {
+          state.operatorFilters = { core:'all', sub:'all', tier:'all', class:'all', trait:'all' };
+          updateOperators();
+        }
+      });
+      updateOperators();
+    }
+
+    function updateOperators() {
+      const panel = $('[data-panel="operators"]');
+      const f = state.operatorFilters;
+      $$('[data-filter]', panel).forEach(b => b.classList.toggle('active', String(f[b.dataset.filter]) === b.dataset.value));
+      const applied = Object.values(f).filter(v => v !== 'all').length;
+      $('[data-filter-count]', panel).textContent = applied ? `${applied}개 적용` : '';
+      const filtered = operators.filter(op =>
+        (f.core === 'all' || op.synergies.includes(f.core)) &&
+        (f.sub === 'all' || op.synergies.includes(f.sub)) &&
+        (f.tier === 'all' || String(op.tier) === String(f.tier)) &&
+        (!hasClassField || f.class === 'all' || op.class === f.class) &&
+        (f.trait === 'all' || op.traitLabel === f.trait));
+      $('[data-operator-results]', panel).innerHTML = tierList.map(t => {
+        const list = filtered.filter(op => String(op.tier) === String(t.id));
+        if (!list.length) return '';
+        return `<section class="tier-block"><div class="tier-header">${img(t.image,'icon32',t.name)}<span>${t.name}</span></div><div class="cards-grid">${list.map(operatorCard).join('')}</div></section>`;
+      }).join('') || '<div class="empty">조건에 맞는 오퍼레이터가 없습니다.</div>';
+    }
+
+    function renderGear() {
+      const panel = $('[data-panel="gear"]');
+      const gearImage = id => toolMap.get(String(id))?.image || '';
+      const oathImage = id => oathKeyMap.get(String(id))?.img || '';
+      panel.innerHTML = `
+        <h2 class="section-title">장비</h2>
+        <section class="box filter-body" style="margin-top:0;">
+          <div class="button-row">
+            <button class="recipe-btn" data-recipe-toggle>
+              ${recipeImage ? `<img src="${recipeImage}" class="recipe-btn-img" alt="">` : ''}
+              <span>조합법</span>
+            </button>
+          </div>
+          <div class="recipe-box" data-recipe-box>
+            ${recipeLines.map(line => `
+              <div class="recipe-line">
+                ${img(gearImage(line.gear1),'recipe-inline-img')}
+                <span>+</span>
+                ${img(gearImage(line.gear2),'recipe-inline-img')}
+                <span>=</span>
+                ${img(oathImage(line.oath),'recipe-inline-img')}
+              </div>
+            `).join('')}
+          </div>
+          <div>
+            <div class="filter-title">티어</div>
+            <div class="button-row">
+              <button class="filter-chip" data-gear-tier="all">전체</button>
+              ${tierList.map(t => `<button class="filter-chip" data-gear-tier="${t.id}">${img(t.image,'icon24',t.name)}</button>`).join('')}
+            </div>
+          </div>
+        </section>
+        <div data-gear-results></div>`;
+      panel.addEventListener('click', e => {
+        if (e.target.closest('[data-recipe-toggle]')) {
+          state.recipeOpen = !state.recipeOpen;
+          updateGear();
+        }
+        const tierBtn = e.target.closest('[data-gear-tier]');
+        if (tierBtn) {
+          state.gearTier = tierBtn.dataset.gearTier;
+          updateGear();
+        }
+      });
+      updateGear();
+    }
+
+    function updateGear() {
+      const panel = $('[data-panel="gear"]');
+      $('[data-recipe-toggle]', panel).classList.toggle('active', state.recipeOpen);
+      $('[data-recipe-box]', panel).classList.toggle('active', state.recipeOpen);
+      $$('[data-gear-tier]', panel).forEach(b => b.classList.toggle('active', b.dataset.gearTier === String(state.gearTier)));
+      const filtered = tools.filter(item => state.gearTier === 'all' || String(item.tier) === String(state.gearTier));
+      $('[data-gear-results]', panel).innerHTML = tierList.map(t => {
+        const items = filtered.filter(g => String(g.tier) === String(t.id));
+        if (!items.length) return '';
+        return `<section class="tier-block"><div class="tier-header">${img(t.image,'icon32',t.name)}<span>${t.name}</span></div><div class="gear-grid">${items.map(gearCard).join('')}</div></section>`;
+      }).join('') || '<div class="empty">조건에 맞는 장비가 없습니다.</div>';
+    }
+
+    /* ---------- 시뮬레이션 ---------- */
+
+    // 변형 구조체로 얻은 맹약과 조화의 인원 +1까지 반영한 인원수
+    function getSelectedCounts() {
+      const counts = new Map();
+      state.simSelected.forEach(id => {
+        const op = operatorMap.get(id);
+        const ids = new Set(op?.synergies || []);
+        const extra = state.simGear[id];
+        if (extra) ids.add(extra);
+        ids.forEach(sid => counts.set(sid, (counts.get(sid) || 0) + 1));
+      });
+      const boosted = new Set();
+      const harmony = oathKeyMap.get(harmonyKey);
+      if (harmony && (counts.get(harmonyKey) || 0) >= harmony.required) {
+        oaths.filter(s => s.type === 'core' && counts.get(s.key) > 0).forEach(s => {
+          counts.set(s.key, counts.get(s.key) + 1);
+          boosted.add(s.key);
+        });
+      }
+      return { counts, boosted };
+    }
+
+    function isOperatorBanned(op) {
+      const syn = op.synergies || [];
+      if (!state.simBanned.length) return false;
+      return syn.length > 0 && syn.every(id => state.simBanned.includes(id));
+    }
+
+    const simRefs = { slots: new Map(), chips: new Map(), empties: [], cells: [], groups: [] };
+
+    function renderSimulation() {
+      const panel = $('[data-panel="simulation"]');
+      const bannable = oaths.filter(s => !s.noBan);
+      panel.innerHTML = `
+        <h2 class="section-title">시뮬레이션</h2>
+        <section class="box sim-status">
+          <div class="sim-topline">
+            <div class="group-title">선택 오퍼레이터 <span class="muted sim-count" data-sim-count></span></div>
+            <button class="reset-btn" data-sim-reset>초기화</button>
+          </div>
+          <div class="slot-grid" data-slot-grid></div>
+          <div class="status-grid" data-status-grid></div>
+        </section>
+        <details class="box" data-ban-box ${isWide() || state.simBanned.length ? 'open' : ''}>
+          <summary>맹약 밴 <span class="muted" data-ban-count></span></summary>
+          <div class="filter-body">
+            <div class="button-row">
+              ${bannable.map(s => `<button class="synergy-btn" data-ban-synergy="${s.key}">${img(s.img,'icon28',s.name)}<span>${s.name}</span></button>`).join('')}
+            </div>
+            <div><button class="reset-btn" data-ban-reset>밴 초기화</button></div>
+          </div>
+        </details>
+        <section class="box sim-filter">
+          <input class="search-input" type="search" placeholder="오퍼레이터 이름 검색" aria-label="오퍼레이터 이름 검색" data-sim-search>
+          <button class="filter-chip" data-sim-tier="all">전체</button>
+          ${tierList.map(t => `<button class="filter-chip" data-sim-tier="${t.id}" aria-label="${t.name}">${img(t.image,'icon24',t.name)}</button>`).join('')}
+        </section>
+        <div data-sim-list>
+          ${oaths.map(s => {
+            const list = operators.filter(op => op.synergies.includes(s.key));
+            if (!list.length) return '';
+            return `<section class="sim-group" data-sim-group><div class="tier-header">${img(s.img,'icon32',s.name)}<span>${s.name}</span></div><div class="sim-op-grid">${list.map(op => `
+              <div class="sim-cell" data-cell="${op.key}">
+                <button class="sim-op" data-sim-op="${op.key}" title="${op.name}" aria-label="${op.name} 선택">${imgEager(op.img,'',op.name)}<span class="tier-badge">${imgEager(tierImage(op.tier),'',`${op.tier}티어`)}</span></button>
+                <button class="sim-info" data-op-info="${op.key}" aria-label="${op.name} 특질 보기">i</button>
+              </div>`).join('')}</div></section>`;
+          }).join('')}
+        </div>`;
+
+      simRefs.cells = $$('[data-cell]', panel).map(el => ({ el, op: operatorMap.get(el.dataset.cell), btn: $('.sim-op', el) }));
+      simRefs.groups = $$('[data-sim-group]', panel).map(el => ({ el, cells: $$('[data-cell]', el) }));
+      simRefs.empties = Array.from({ length: MAX_SELECT }, () => toNode('<div class="slot-empty" aria-hidden="true"></div>'));
+
+      panel.addEventListener('click', onSimClick);
+      panel.addEventListener('contextmenu', e => {
+        const cell = e.target.closest('[data-cell]');
+        if (!cell) return;
+        e.preventDefault();
+        openSheet(cell.dataset.cell);
+      });
+      $('[data-sim-search]', panel).addEventListener('input', e => {
+        state.simSearch = e.target.value.trim();
+        applySimFilter();
+      });
+      updateSimulation();
+      applySimFilter();
+    }
+
+    function onSimClick(e) {
+      const t = e.target;
+      const remove = t.closest('[data-slot-remove]');
+      if (remove) { toggleOperator(remove.dataset.slotRemove); return; }
+      const slot = t.closest('[data-slot]');
+      if (slot) { openSheet(slot.dataset.slot); return; }
+      const info = t.closest('[data-op-info]');
+      if (info) { openSheet(info.dataset.opInfo); return; }
+      const opBtn = t.closest('[data-sim-op]');
+      if (opBtn) { toggleOperator(opBtn.dataset.simOp); return; }
+      const ban = t.closest('[data-ban-synergy]');
+      if (ban) { toggleBan(ban.dataset.banSynergy); return; }
+      const tier = t.closest('[data-sim-tier]');
+      if (tier) {
+        state.simTier = tier.dataset.simTier === state.simTier ? 'all' : tier.dataset.simTier;
+        applySimFilter();
+        return;
+      }
+      if (t.closest('[data-sim-reset]')) {
+        state.simSelected = [];
+        state.simGear = {};
+        updateSimulation();
+      } else if (t.closest('[data-ban-reset]')) {
+        state.simBanned = [];
+        updateSimulation();
+      }
+    }
+
+    function toggleOperator(key) {
+      if (state.simSelected.includes(key)) {
+        state.simSelected = state.simSelected.filter(v => v !== key);
+        delete state.simGear[key];
+      } else {
+        const op = operatorMap.get(key);
+        if (state.simSelected.length >= MAX_SELECT || !op || isOperatorBanned(op)) return;
+        state.simSelected = [...state.simSelected, key];
+      }
+      updateSimulation();
+    }
+
+    function toggleBan(id) {
+      state.simBanned = state.simBanned.includes(id) ? state.simBanned.filter(v => v !== id) : [...state.simBanned, id];
+      state.simSelected = state.simSelected.filter(key => {
+        const keep = !isOperatorBanned(operatorMap.get(key));
+        if (!keep) delete state.simGear[key];
+        return keep;
+      });
+      updateSimulation();
+    }
+
+    function applySimFilter() {
+      const panel = $('[data-panel="simulation"]');
+      $$('[data-sim-tier]', panel).forEach(b => b.classList.toggle('active', b.dataset.simTier === String(state.simTier)));
+      const q = state.simSearch.toLowerCase();
+      simRefs.cells.forEach(({ el, op }) => {
+        const tierPass = state.simTier === 'all' || String(op.tier) === String(state.simTier);
+        el.hidden = !(tierPass && (!q || op.name.toLowerCase().includes(q)));
+      });
+      simRefs.groups.forEach(({ el, cells }) => { el.hidden = cells.every(c => c.hidden); });
+    }
+
+    function slotNode(key) {
+      if (simRefs.slots.has(key)) return simRefs.slots.get(key);
+      const op = operatorMap.get(key);
+      const node = toNode(`
+        <div class="slot" data-slot="${key}" title="${op.name}">
+          ${imgNow(op.img,'portrait',op.name)}
+          <span class="tier-badge">${imgNow(tierImage(op.tier),'',`${op.tier}티어`)}</span>
+          <button class="slot-x" data-slot-remove="${key}" aria-label="${op.name} 선택 해제">✕</button>
+        </div>`);
+      simRefs.slots.set(key, node);
+      return node;
+    }
+
+    function updateSlotGear(node, key) {
+      const oath = oathKeyMap.get(state.simGear[key]);
+      const cur = $('.slot-gear', node);
+      if (!oath) { cur?.remove(); return; }
+      if (cur?.dataset.oath === oath.key) return;
+      cur?.remove();
+      const icon = toNode(imgNow(oath.img, 'slot-gear', `변형 구조체: ${oath.name}`));
+      icon.dataset.oath = oath.key;
+      node.appendChild(icon);
+    }
+
+    function chipNode(s) {
+      if (simRefs.chips.has(s.key)) return simRefs.chips.get(s.key);
+      const node = toNode(`
+        <div class="status-chip" title="${s.name}">
+          ${imgNow(s.img,'icon24',s.name)}
+          <span>${s.name}</span>
+          <span class="num"></span>
+          <span class="boost" title="조화로 인원 +1" hidden>+1</span>
+          <span class="pips">${s.breakpoints.map(() => '<i></i>').join('')}</span>
+        </div>`);
+      simRefs.chips.set(s.key, node);
+      return node;
+    }
+
+    function updateSimulation() {
+      const panel = $('[data-panel="simulation"]');
+      if (!panel.dataset.ready) return;
+      const full = state.simSelected.length >= MAX_SELECT;
+      const count = $('[data-sim-count]', panel);
+      count.textContent = `${state.simSelected.length}/${MAX_SELECT}`;
+      count.classList.toggle('full', full);
+
+      const slots = state.simSelected.map(key => {
+        const node = slotNode(key);
+        updateSlotGear(node, key);
+        return node;
+      });
+      $('[data-slot-grid]', panel).replaceChildren(...slots, ...simRefs.empties.slice(slots.length));
+
+      const { counts, boosted } = getSelectedCounts();
+      const present = oaths.filter(s => counts.get(s.key) > 0).map(s => {
+        const n = counts.get(s.key);
+        const level = s.breakpoints.filter(b => n >= b).length;
+        return { s, n, level };
+      }).sort((a, b) => b.level - a.level || b.n - a.n || (a.s.type === 'core' ? -1 : 1));
+      const chips = present.map(({ s, n, level }) => {
+        const node = chipNode(s);
+        const next = s.breakpoints.find(b => b > n);
+        $('.num', node).textContent = next ? `${n}/${next}` : `${n}`;
+        $('.boost', node).hidden = !boosted.has(s.key);
+        $$('.pips i', node).forEach((pip, i) => pip.classList.toggle('on', i < level));
+        node.classList.toggle('active', level > 0);
+        return node;
+      });
+      const grid = $('[data-status-grid]', panel);
+      if (chips.length) grid.replaceChildren(...chips);
+      else grid.replaceChildren(toNode('<div class="status-empty">오퍼레이터를 선택하면 맹약 현황이 표시됩니다.</div>'));
+
+      $$('[data-ban-synergy]', panel).forEach(b => b.classList.toggle('banned', state.simBanned.includes(b.dataset.banSynergy)));
+      $('[data-ban-count]', panel).textContent = state.simBanned.length ? `${state.simBanned.length}개` : '';
+
+      simRefs.cells.forEach(({ el, op, btn }) => {
+        const banned = isOperatorBanned(op);
+        el.classList.toggle('selected', state.simSelected.includes(op.key));
+        el.classList.toggle('banned', banned);
+        el.classList.toggle('maxed', full);
+        btn.disabled = banned;
+      });
+      saveState();
+    }
+
+    /* 특질 창 */
+    const sheet = $('#op-sheet');
+
+    function openSheet(key) {
+      sheet.dataset.op = key;
+      drawSheet();
+      if (!sheet.open) sheet.showModal();
+    }
+
+    function drawSheet() {
+      const key = sheet.dataset.op;
+      const op = operatorMap.get(key);
+      if (!op) return;
+      const selected = state.simSelected.includes(key);
+      const banned = isOperatorBanned(op);
+      const canAdd = state.simSelected.length < MAX_SELECT && !banned;
+      const gearChoice = selected && recipeLines.length ? `
+        <div class="sheet-section">
+          <div class="filter-title">변형 구조체로 얻을 맹약</div>
+          <div class="gear-choice">
+            <button class="${state.simGear[key] ? '' : 'active'}" data-gear-oath="">없음</button>
+            ${recipeLines.map(line => {
+              const oath = oathKeyMap.get(String(line.oath));
+              const gear = toolMap.get(String(line.gear2));
+              if (!oath) return '';
+              const owned = op.synergies.includes(oath.key);
+              return `<button class="${state.simGear[key] === oath.key ? 'active' : ''}" data-gear-oath="${oath.key}" ${owned ? 'disabled' : ''} title="${gear?.name || ''}">${imgNow(oath.img,'icon24',oath.name)}<span>${oath.name}</span></button>`;
+            }).join('')}
+          </div>
+        </div>` : '';
+      sheet.innerHTML = `
+        <div class="sheet-head">
+          <div class="avatar">${imgNow(op.img,'',op.name)}<span class="tier-badge">${imgNow(tierImage(op.tier),'',`${op.tier}티어`)}</span></div>
+          <div>
+            <div class="name">${op.name}</div>
+            <div class="sub">${op.class || '-'}</div>
+            <div style="margin-top:6px;"><span class="mini-pill">${op.traitLabel || '특질'}</span></div>
+          </div>
+          <button class="sheet-close" data-sheet-close aria-label="닫기">✕</button>
+        </div>
+        <div>${op.traitDescriptionText || ''}</div>
+        <div class="inline-tags" style="margin-top:12px;">${synergyTags(op.synergies)}</div>
+        ${gearChoice}
+        <button class="sheet-action ${selected ? 'remove' : ''}" data-sheet-toggle ${selected || canAdd ? '' : 'disabled'}>
+          ${selected ? '선택 해제' : banned ? '밴된 오퍼레이터' : canAdd ? '선택' : `${MAX_SELECT}명까지 선택 가능`}
+        </button>`;
+    }
+
+    sheet.addEventListener('click', e => {
+      const t = e.target;
+      if (t === sheet || t.closest('[data-sheet-close]')) { sheet.close(); return; }
+      if (t.closest('[data-sheet-toggle]')) {
+        toggleOperator(sheet.dataset.op);
+        drawSheet();
+        return;
+      }
+      const g = t.closest('[data-gear-oath]');
+      if (g && !g.disabled) {
+        if (g.dataset.gearOath) state.simGear[sheet.dataset.op] = g.dataset.gearOath;
+        else delete state.simGear[sheet.dataset.op];
+        updateSimulation();
+        drawSheet();
+      }
+    });
+
+    /* 탭: 처음 여는 탭만 그린다 */
+    const renderers = { strategy: renderStrategy, synergy: renderSynergy, operators: renderOperators, gear: renderGear, simulation: renderSimulation };
+
+    function showTab(key, userAction) {
+      state.tab = key;
+      const panel = $(`[data-panel="${key}"]`);
+      if (!panel.dataset.ready) {
+        panel.dataset.ready = '1';
+        renderers[key]();
+      }
+      $$('.panel').forEach(p => p.classList.toggle('active', p === panel));
+      $$('[data-tab]').forEach(b => {
+        const on = b.dataset.tab === key;
+        b.classList.toggle('active', on);
+        if (on && userAction) b.scrollIntoView({ inline: 'center', block: 'nearest' });
+      });
+      if (userAction) window.scrollTo(0, 0);
+      saveState();
+    }
+
+    loadState();
+    renderTabs();
+    showTab(state.tab, false);
+  </script>
+</body>
+</html>
