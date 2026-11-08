@@ -637,6 +637,8 @@
     function isOperatorBanned(op) {
       const syn = op.synergies || [];
       if (!state.simBanned.length) return false;
+      // 핵심 맹약이 밴되면 부가 맹약과 관계없이 그 핵심 맹약의 오퍼레이터는 모두 밴
+      if (syn.some(id => state.simBanned.includes(id) && oathKeyMap.get(id)?.type === 'core')) return true;
       return syn.length > 0 && syn.every(id => state.simBanned.includes(id));
     }
 
