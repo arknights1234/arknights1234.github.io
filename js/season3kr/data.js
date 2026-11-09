@@ -547,7 +547,7 @@ export const data = {
 	{ id: 65, name: "호시구마", oaths: ["염국"], stage: 4, class: "1회 중첩", trait: "획득 시", traitDescription: "<획득 시> 자신이 속한 맹약의 중첩 수 <span style='color: #3A9BDC;'>+8(16)</span> (맹약 활성화 불필요)", img: "images/头像_星熊.webp" },
 	{ id: 66, name: "머드락", oaths: ["독행"], stage: 4, class: "정비 능력", trait: "판매 시", traitDescription: "<판매 시> 다음 휴식 기간에 자금 2(4) 추가 획득", img: "images/头像_泥岩.webp" },
 	{ id: 67, name: "플레임테일", oaths: ["카시미어"], stage: 4, class: "정비 능력", trait: "획득 시", traitDescription: "<획득 시> 와일드메인 혹은 애쉬락 1(2)명 획득, 낮은 확률로 파투스 획득", img: "images/头像_焰尾.webp" },
-	{ id: 68, name: "파투스", oaths: ["카시미어","정밀"], stage: 4, class: "지속 중첩", trait: "기타", traitDescription: "<전투 시작 시> 같은 행 가장 오른쪽의 오퍼레이터가 '<배치 시> 활성화된 [카시미어]/[정밀] 맹약의 중첩 수 <span style='color: #3A9BDC;'>+4(8)</span> (전투당 최대 24(48)회 중첩)' 특질 획득", img: "images/头像_灰毫.webp" },
+	{ id: 68, name: "파투스", oaths: ["카시미어","정밀"], stage: 4, class: "지속 중첩", trait: "기타", traitDescription: "<전투 시작 시> 같은 행 가장 오른쪽의 오퍼레이터가 '<배치 시> 활성화된 [카시미어]/[정밀] 맹약의 중첩 수 <span style='color: #3A9BDC;'>+4(8)</span> (전투당 최대 24(48)회 중첩)' 특질 획득", img: "images/头像_远牙.webp" },
 	{ id: 69, name: "프틸롭시스", oaths: ["기민","조력"], stage: 4, class: "특이화", trait: "휴식 기간 진입 시", traitDescription: "전방 1칸의 오퍼레이터가 '휴식 기간 진입 시' 특질을 보유하고 있을 경우, 자신의 특질도 상대와 동일해짐", img: "images/头像_白面鸮.webp" },
 	{ id: 70, name: "실버애쉬", oaths: ["쉐라그"], stage: 4, class: "지속 중첩", trait: "기타", traitDescription: "<전투 중> 범위 내 적 1명이 빙결될 때마다 50% 확률로 활성화된 [쉐라그] 맹약의 중첩 수 <span style='color: #3A9BDC;'>+1(2)</span>", img: "images/头像_银灰.webp" },
 	{ id: 71, name: "가비알 디 인빈서블", oaths: ["사르곤"], stage: 4, class: "지속 중첩", trait: "기타", traitDescription: "<전투 중> 스킬 발동 시 활성화된 [사르곤] 맹약의 중첩 수 <span style='color: #3A9BDC;'>+9(18)</span>", img: "images/头像_百炼嘉维尔.webp" },

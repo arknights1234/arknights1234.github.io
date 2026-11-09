@@ -184,7 +184,7 @@ export const data = {
 	//{ id: 61, name: "폴리닉", oaths: ["조력","협력"], stage: 4, trait: "판매 시", traitDescription: "<판매 시> 다음 준비 기간에 추가로 2원(4원) 획득﻿", img: "images/头像_亚叶.webp" },
 	{ id: 72, name: "머드락", oaths: ["단독"], stage: 4, trait: "판매 시", traitDescription: "<판매 시> 다음 준비 기간에 추가로 2원(4원) 획득", img: "images/头像_泥岩.webp" },
 	{ id: 73, name: "플레임테일", oaths: ["카시미어"], stage: 4, trait: "획득 시", traitDescription: "<획득 시> 와일드메인 또는 애쉬락을 1(2)번 획득하며, 낮은 확률로 파투스를 획득", img: "images/头像_焰尾.webp" },
-	{ id: 74, name: "파투스", oaths: ["카시미어","정밀"], stage: 4, trait: "기타", traitDescription: "전투 시작 시, 같은 줄의 가장 오른쪽에 있는 오퍼레이터에게 배치 시, 활성화된 [카시미어] [정밀] 스택을 4(8)만큼 증가 특성을 부여. 전투 당 최대 24(48)", img: "images/头像_灰毫.webp" },
+	{ id: 74, name: "파투스", oaths: ["카시미어","정밀"], stage: 4, trait: "기타", traitDescription: "전투 시작 시, 같은 줄의 가장 오른쪽에 있는 오퍼레이터에게 배치 시, 활성화된 [카시미어] [정밀] 스택을 4(8)만큼 증가 특성을 부여. 전투 당 최대 24(48)", img: "images/头像_远牙.webp" },
 	{ id: 92, name: "가비알 디 인빈서블", oaths: ["사르곤"], stage: 4, trait: "기타", traitDescription: "전투 중 스킬 발동 시 활성화된 [사르곤] +9(18)", img: "images/头像_百炼嘉维尔.webp" },
 	{ id: 78, name: "와파린", oaths: ["기적"], stage: 4, trait: "기타", traitDescription: "자기 앞 한 칸의 오퍼레이터가 스킬 발동 시 활성화된 소속 맹약의 스택 +1(+2) 특성을 추가로 획득 <br>(매 전투마다 최대 7(14)스택까지 쌓을 수 있음)", img: "images/头像_华法琳.webp" },
 	{ id: 83, name: "시빌라이트 에테르나", oaths: ["협력"], stage: 4, trait: "기타", traitDescription: "자기 앞 한 칸의 오퍼레이터가 특성을 통해 맹약 스택 획득 시 획득하는 스택을 +1(+2)", img: "images/头像_魔王.webp" },
